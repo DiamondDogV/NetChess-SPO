@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>bb7473da-edf6-41f9-8f15-543e7e27f39b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Chess.Dal\Chess.Dal.csproj" />
+    <ProjectReference Include="..\Chess.Domain\Chess.Domain.csproj" />
+    <ProjectReference Include="..\Chess.Service\Chess.Service.csproj" />
+  </ItemGroup>
+
+</Project>

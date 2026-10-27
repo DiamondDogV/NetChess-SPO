@@ -1,0 +1,12 @@
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Service.deps.json
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Service.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Service.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.GeneratedMSBuildEditorConfig.editorconfig
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.AssemblyInfoInputs.cache
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.AssemblyInfo.cs
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.csproj.CoreCompileInputs.cache
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.sourcelink.json
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\refint\Chess.Service.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\ref\Chess.Service.dll

@@ -1,0 +1,13 @@
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\bin\Debug\net8.0\Chess.Dal.deps.json
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\bin\Debug\net8.0\Chess.Dal.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\bin\Debug\net8.0\Chess.Dal.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.csproj.AssemblyReference.cache
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.GeneratedMSBuildEditorConfig.editorconfig
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.AssemblyInfoInputs.cache
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.AssemblyInfo.cs
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.csproj.CoreCompileInputs.cache
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.sourcelink.json
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\refint\Chess.Dal.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\ref\Chess.Dal.dll
