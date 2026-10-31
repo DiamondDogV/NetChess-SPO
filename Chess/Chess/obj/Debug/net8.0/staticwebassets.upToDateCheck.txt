@@ -1,12 +1,5 @@
-wwwroot\css\chat.css
-wwwroot\css\chatsspis.css
-wwwroot\css\message.css
-wwwroot\css\simpleform.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
-wwwroot\Images\icons8-плюс-2-50.png
-wwwroot\js\chathubmessages.js
-wwwroot\js\loginforms.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map

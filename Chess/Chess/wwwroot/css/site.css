@@ -71,3 +71,83 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+
+
+
+
+/* --- Стили для страницы ChessNet --- */
+.chess-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh; /* Центрируем по вертикали */
+}
+
+/* Заголовок большими буквами */
+.chess-title {
+    font-size: 4rem; /* Очень крупный шрифт */
+    font-weight: 800; /* Жирный */
+    color: aliceblue; /* Темно-серый, спокойный */
+    text-transform: uppercase; /* Все буквы заглавные */
+    letter-spacing: 2px; /* Небольшое расстояние между буквами */
+    margin-bottom: 50px; /* Отступ до кнопок */
+}
+
+/* Контейнер для кнопок */
+.buttons-container {
+    display: flex;
+    gap: 30px; /* Ровно 30 пикселей между кнопками */
+}
+
+/* Общие стили для кнопок */
+/* Общие стили для кнопок */
+.chess-btn {
+    width: 400px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-decoration: none; /* Убирает подчеркивание */
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+    /* Убираем подчеркивание при наведении (Bootstrap иногда его добавляет) */
+    .chess-btn:hover,
+    .chess-btn:focus {
+        text-decoration: none;
+    }
+
+/* Спокойный цвет для "Найти игру" (сдержанный серый) */
+.btn-find {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+    .btn-find:hover {
+        background-color: #5a6268;
+        color: #ffffff;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        text-decoration: none;
+    }
+
+/* Спокойный цвет для "Создать игру" (темный зеленовато-серый) */
+.btn-create {
+    background-color: #2f4f4f;
+    color: #ffffff;
+}
+
+    .btn-create:hover {
+        background-color: #243d3d;
+        color: #ffffff;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        text-decoration: none;
+    }

@@ -1,8 +1,18 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "ChessNet";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="chess-page">
+    <h1 class="chess-title">ChessNet</h1>
+
+    <div class="buttons-container">
+        <!-- Не забудьте поменять asp-controller и asp-action на свои -->
+        <a asp-controller="Game" asp-action="Find" class="chess-btn btn-find">
+            Найти игру
+        </a>
+
+        <a asp-controller="Game" asp-action="Create" class="chess-btn btn-create">
+            Создать игру
+        </a>
+    </div>
 </div>
