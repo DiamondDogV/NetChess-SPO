@@ -216,6 +216,16 @@
         "build": {
           "buildTransitive/net8.0/_._": {}
         }
+      },
+      "Chess.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/Chess.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Chess.Domain.dll": {}
+        }
       }
     }
   },
@@ -586,10 +596,16 @@
         "system.diagnostics.diagnosticsource.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "Chess.Domain/1.0.0": {
+      "type": "project",
+      "path": "../Chess.Domain/Chess.Domain.csproj",
+      "msbuildProject": "../Chess.Domain/Chess.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Chess.Domain >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 9.0.0"
     ]
   },
@@ -625,7 +641,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Domain\\Chess.Domain.csproj": {
+              "projectPath": "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Domain\\Chess.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

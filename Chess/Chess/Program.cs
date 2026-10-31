@@ -14,6 +14,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Chess.Dal;
+using Chess.Dal.Repositories;
+using Chess.Dal.Interfaces;
+using Chess.Service.Implementations;
+using Chess.Service.Interfaces;
 
 namespace Chess
 {
@@ -26,16 +30,33 @@ namespace Chess
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
 
             builder.Services.AddDbContextPool<ApplicationDBContext>(options =>
          options.UseMySql(builder.Configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))));
 
 
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>
+            {
+                option.LoginPath = new PathString("/Login/Login");
+                option.AccessDeniedPath = new PathString("/Login/Login");
+
+            });
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = ".MyApp.Session";
+                options.IdleTimeout = TimeSpan.FromHours(672);
+                options.Cookie.IsEssential = true;
+            });
 
 
             var app = builder.Build();
 
-          
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -48,7 +69,8 @@ namespace Chess
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

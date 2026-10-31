@@ -190,6 +190,7 @@
       },
       "Chess.Dal/1.0.0": {
         "dependencies": {
+          "Chess.Domain": "1.0.0",
           "Microsoft.EntityFrameworkCore": "9.0.0"
         },
         "runtime": {
@@ -208,6 +209,10 @@
         }
       },
       "Chess.Service/1.0.0": {
+        "dependencies": {
+          "Chess.Dal": "1.0.0",
+          "Chess.Domain": "1.0.0"
+        },
         "runtime": {
           "Chess.Service.dll": {
             "assemblyVersion": "1.0.0.0",

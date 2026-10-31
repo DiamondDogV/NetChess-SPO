@@ -11,3 +11,6 @@ D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.dll
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\refint\Chess.Dal.dll
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.pdb
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\ref\Chess.Dal.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\bin\Debug\net8.0\Chess.Domain.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\bin\Debug\net8.0\Chess.Domain.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Dal\obj\Debug\net8.0\Chess.Dal.csproj.Up2Date

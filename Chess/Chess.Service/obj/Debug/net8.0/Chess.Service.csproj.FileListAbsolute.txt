@@ -10,3 +10,9 @@ D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Serv
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\refint\Chess.Service.dll
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.pdb
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\ref\Chess.Service.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Dal.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Domain.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Dal.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\bin\Debug\net8.0\Chess.Domain.pdb
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Service.csproj.AssemblyReference.cache
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Service\obj\Debug\net8.0\Chess.Se.07BA7054.Up2Date

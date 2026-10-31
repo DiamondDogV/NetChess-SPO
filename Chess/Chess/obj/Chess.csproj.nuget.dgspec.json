@@ -32,7 +32,11 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Domain\\Chess.Domain.csproj": {
+                "projectPath": "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Domain\\Chess.Domain.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -170,7 +174,14 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Dal\\Chess.Dal.csproj": {
+                "projectPath": "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Dal\\Chess.Dal.csproj"
+              },
+              "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Domain\\Chess.Domain.csproj": {
+                "projectPath": "D:\\C#\\ASP.Net\\Chess\\NetChess-SPO\\Chess\\Chess.Domain\\Chess.Domain.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

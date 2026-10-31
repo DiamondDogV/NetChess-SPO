@@ -293,6 +293,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "Chess.Domain": "1.0.0",
           "Microsoft.EntityFrameworkCore": "9.0.0"
         },
         "compile": {
@@ -315,6 +316,10 @@
       "Chess.Service/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Chess.Dal": "1.0.0",
+          "Chess.Domain": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/Chess.Service.dll": {}
         },

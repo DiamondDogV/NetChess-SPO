@@ -1,3 +1,5 @@
+using System;
+
 namespace Chess.Models
 {
     public class ErrorViewModel
