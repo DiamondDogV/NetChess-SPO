@@ -1,0 +1,48 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<ActiveRoomModel>
+
+<div class="rooms-page">
+    <h1 class="rooms-title">Активные комнаты</h1>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-container">
+            <table class="rooms-table">
+                <thead>
+                    <tr>
+                        <th>Название комнаты</th>
+                        <th>Рейтинг (Elo)</th>
+                        <th style="text-align: right;">Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var room in Model)
+                    {
+                        <tr>
+                            <td>@room.Name</td>
+                            <td><span class="elo-badge">@room.Elo</span></td>
+                            <td style="text-align: right;">
+                                <!-- Не забудьте поменять asp-action на нужный вам метод в контроллере -->
+                                <a asp-action="JoinRoom" asp-route-roomName="@room.Name" class="btn-join">Зайти</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div style="color: #aaa; font-size: 1.2rem; margin-top: 20px;">
+            Пока нет активных комнат. Создайте первую!
+        </div>
+    }
+
+    <div style="margin-top: 30px;">
+        <a asp-controller="Home" asp-action="Index" class="btn-join" style="background-color: transparent; border: 1px solid #6c757d;">← Назад на главную</a>
+    </div>
+</div>

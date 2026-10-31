@@ -33,6 +33,9 @@ namespace Chess
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
 
+            builder.Services.AddScoped<IActiveRoomRepository, ActiveRoomRepository>();
+            builder.Services.AddScoped<IActiveRoomService, ActiveRoomService>();
+
 
             builder.Services.AddDbContextPool<ApplicationDBContext>(options =>
          options.UseMySql(builder.Configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))));

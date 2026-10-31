@@ -1,7 +1,0 @@
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\css\chat.css
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\css\chatsspis.css
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\css\message.css
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\css\simpleform.css
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\Images\icons8-плюс-2-50.png
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\js\chathubmessages.js
-D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\wwwroot\js\loginforms.js

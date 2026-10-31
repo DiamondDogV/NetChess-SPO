@@ -14,5 +14,6 @@ namespace Chess.Dal
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<ActiveRoom> ActiveRooms { get; set; }
     }
 }

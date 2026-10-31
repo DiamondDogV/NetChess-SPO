@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Создание комнаты";
+}
+
+@model ChessBoardModel
+
+<form class="reg-form" asp-controller="Game" asp-action="PlayGame">
+    
+    <label>Название комнаты</label>
+
+    <input type="text" asp-for="RoomName" placeholder="Введите название..." required />
+
+    <!-- Выбор цвета (как на скрине) -->
+    <div class="color-picker-group">
+        <!-- Белый -->
+        <div class="color-option">
+            <input type="radio" asp-for="SelectedColor" value="White" id="color-white" checked>
+            <label for="color-white" class="color-box color-white" title="Белые"></label>
+            <span class="color-label">Белые</span>
+        </div>
+
+        <!-- Черный -->
+        <div class="color-option">
+            <input type="radio" asp-for="SelectedColor" value="Black" id="color-black">
+            <label for="color-black" class="color-box color-black" title="Черные"></label>
+            <span class="color-label">Черные</span>
+        </div>
+
+        <!-- Случайный -->
+        <div class="color-option">
+            <input type="radio" asp-for="SelectedColor" value="Random" id="color-random">
+            <label for="color-random" class="color-box color-random" title="Случайный"></label>
+            <span class="color-label">Случайно</span>
+        </div>
+    </div>
+
+    <!-- Блок с дружеской комнатой -->
+    <div class="checkbox-container">
+        <input type="checkbox" id="friendlyRoom" asp-for="IsFriendlyRoom" />
+        <label for="friendlyRoom">Дружеская комната</label>
+    </div>
+
+    <!-- Кнопки (Назад и Старт) -->
+    <div class="button-group">
+        <a href="/" class="back-btn">Назад</a>
+        <button type="submit" id="submit-bt">Старт</button>
+    </div>
+</form>

@@ -16,11 +16,7 @@ body {
     margin-bottom: 60px;
     background-color: #252422;
     position: relative;
-}
-
-.main-section {
-    width: 1000px;
-    margin: auto;
+    font-family: 'Comic Sans MS', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 a.navbar-brand {
@@ -73,37 +69,39 @@ button.accept-policy {
 }
 
 
+.chess-room-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: aliceblue;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 50px;
+}
 
 
 
-
-/* --- Стили для страницы ChessNet --- */
 .chess-page {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 80vh; /* Центрируем по вертикали */
+    min-height: 80vh;
 }
 
-/* Заголовок большими буквами */
 .chess-title {
-    font-size: 4rem; /* Очень крупный шрифт */
-    font-weight: 800; /* Жирный */
-    color: aliceblue; /* Темно-серый, спокойный */
-    text-transform: uppercase; /* Все буквы заглавные */
-    letter-spacing: 2px; /* Небольшое расстояние между буквами */
-    margin-bottom: 50px; /* Отступ до кнопок */
+    font-size: 4rem;
+    font-weight: 800;
+    color: aliceblue;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 50px;
 }
 
-/* Контейнер для кнопок */
 .buttons-container {
     display: flex;
-    gap: 30px; /* Ровно 30 пикселей между кнопками */
+    gap: 30px; 
 }
 
-/* Общие стили для кнопок */
-/* Общие стили для кнопок */
 .chess-btn {
     width: 400px;
     height: 200px;
@@ -112,19 +110,17 @@ button.accept-policy {
     justify-content: center;
     font-size: 1.5rem;
     font-weight: 600;
-    text-decoration: none; /* Убирает подчеркивание */
+    text-decoration: none; 
     border-radius: 12px;
     transition: all 0.3s ease;
     border: 2px solid transparent;
 }
 
-    /* Убираем подчеркивание при наведении (Bootstrap иногда его добавляет) */
     .chess-btn:hover,
     .chess-btn:focus {
         text-decoration: none;
     }
 
-/* Спокойный цвет для "Найти игру" (сдержанный серый) */
 .btn-find {
     background-color: #6c757d;
     color: #ffffff;
@@ -138,7 +134,6 @@ button.accept-policy {
         text-decoration: none;
     }
 
-/* Спокойный цвет для "Создать игру" (темный зеленовато-серый) */
 .btn-create {
     background-color: #2f4f4f;
     color: #ffffff;
@@ -151,3 +146,222 @@ button.accept-policy {
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         text-decoration: none;
     }
+
+
+
+
+
+
+/* Контейнер для центрирования */
+.game-container {
+    display: flex;
+    flex-direction: column; /* Ставим элементы друг под другом */
+    justify-content: center;
+    align-items: center; /* Центрируем по горизонтали */
+    padding-top: 30px;
+    gap: 20px;
+    width: 100%;
+    min-height: 80vh; /* Чтобы доска была по центру экрана */
+}
+
+/* Название комнаты сверху */
+.room-title {
+    color: #ffffff;
+    font-size: 24px;
+    text-align: left;
+    /* Ширина заголовка равна ширине доски (8 * 70 = 560px) */
+    width: 560px;
+    margin: 0 auto;
+}
+
+/* Сама доска */
+.chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 70px);
+    grid-template-rows: repeat(8, 70px);
+    /* Жестко фиксируем общие размеры, чтобы не было растягивания */
+    width: 560px;
+    height: 560px;
+    border: 2px solid #222;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background-color: #f0d9b5;
+    margin: 0 auto; /* Центрируем саму доску */
+}
+
+/* Ячейка доски */
+.cell {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+/* Цвета клеток (спокойные, как на скрине) */
+.cell-light {
+    background-color: #f0d9b5;
+}
+
+.cell-dark {
+    background-color: #b58863;
+}
+
+/* Подсветка клетки при наведении */
+.cell:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid #4da6ff;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+/* === СТИЛИ ДЛЯ ФИГУР === */
+.piece {
+    font-family: "Arial Unicode MS", "DejaVu Sans", sans-serif;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.piece-white {
+    color: #ffffff;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 2px 3px rgba(0,0,0,0.4);
+}
+
+.piece-black {
+    color: #111111;
+    text-shadow: 0px 1px 1px rgba(255,255,255,0.2);
+}
+
+.piece-purple {
+    color: #4a4299;
+    text-shadow: -1px -1px 0 #111, 1px -1px 0 #111, -1px 1px 0 #111, 1px 1px 0 #111;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.rooms-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 80vh;
+    padding-top: 50px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.rooms-title {
+    color: aliceblue;
+    font-size: 3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* Контейнер для таблицы */
+.table-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #3b3a39; /* Чуть светлее фона страницы для контраста */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    overflow: hidden; /* Чтобы скругленные углы работали */
+    border: 1px solid #444;
+}
+
+/* Стили таблицы */
+.rooms-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #f8f9fa;
+}
+
+    .rooms-table th,
+    .rooms-table td {
+        padding: 15px 20px;
+        text-align: left;
+        border-bottom: 1px solid #444;
+    }
+
+    /* Заголовок таблицы */
+    .rooms-table th {
+        background-color: #2f4f4f; /* Ваш цвет btn-create */
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Эффект при наведении на строку */
+    .rooms-table tbody tr {
+        transition: background-color 0.3s ease;
+    }
+
+        .rooms-table tbody tr:hover {
+            background-color: #4a4847;
+        }
+
+        /* Последняя строка без нижней границы */
+        .rooms-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+/* Кнопка "Зайти" */
+.btn-join {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #6c757d; /* Ваш цвет btn-find */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn-join:hover {
+        background-color: #5a6268;
+        transform: scale(1.05);
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+/* Если рейтинг (Elo) выделяется */
+.elo-badge {
+    background-color: #1b6ec2;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
