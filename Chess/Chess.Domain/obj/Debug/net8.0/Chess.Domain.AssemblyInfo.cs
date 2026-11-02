@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Chess.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ea939aaeaa7f07e7983c51c99855f0c8e35cca70")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+77f4f754d806be14091670333c88fb8c574fa668")]
 [assembly: System.Reflection.AssemblyProductAttribute("Chess.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Chess.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

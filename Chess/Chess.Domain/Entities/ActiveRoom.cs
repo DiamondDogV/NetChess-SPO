@@ -11,7 +11,12 @@ namespace Chess.Domain.Entities
         public long Id { get; set; }
         public string Name { get; set; }
         public int Elo { get; set; }
-
         public string Special { get; set; }
+
+        public string Token { get; set; }         
+        public long? OwnerUserId { get; set; }    
+        public DateTime CreatedAt { get; set; }
+        public DateTime LastHeartbeat { get; set; }
+        public bool IsWhite { get; set; }
     }
 }

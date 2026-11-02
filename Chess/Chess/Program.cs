@@ -27,6 +27,7 @@ namespace Chess
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
@@ -35,6 +36,7 @@ namespace Chess
 
             builder.Services.AddScoped<IActiveRoomRepository, ActiveRoomRepository>();
             builder.Services.AddScoped<IActiveRoomService, ActiveRoomService>();
+
 
 
             builder.Services.AddDbContextPool<ApplicationDBContext>(options =>
@@ -56,6 +58,7 @@ namespace Chess
                 options.Cookie.IsEssential = true;
             });
 
+            builder.Services.AddHostedService<RoomCleanupService>();
 
             var app = builder.Build();
 

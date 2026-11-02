@@ -67,3 +67,27 @@
     </div>
 
 </div>
+
+
+<script>
+    const ROOM_TOKEN = '@ViewBag.Token';
+    const HEARTBEAT_MS = 5000;
+
+    async function heartbeat() {
+        try {
+            await fetch('/Game/Heartbeat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: ROOM_TOKEN })
+            });
+        } catch (e) { }
+    }
+
+    heartbeat();
+    const hbTimer = setInterval(heartbeat, HEARTBEAT_MS);
+
+    window.addEventListener('beforeunload', () => {
+        navigator.sendBeacon('/Game/CloseRoom',
+            new Blob([JSON.stringify({ token: ROOM_TOKEN })], { type: 'application/json' }));
+    });
+</script>

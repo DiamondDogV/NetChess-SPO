@@ -37,5 +37,35 @@ namespace Chess.Dal.Repositories
             await dBContext.SaveChangesAsync();
             return true;
         }
+
+
+        public async Task<ActiveRoom> GetByToken(string token) => await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+
+        public async Task<bool> TouchHeartbeat(string token)
+        {
+            var room = await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+            if (room == null) return false;
+            room.LastHeartbeat = DateTime.UtcNow;
+            await dBContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<int> RemoveStale(DateTime olderThan)
+        {
+            var stale = await dBContext.ActiveRooms.Where(x => x.LastHeartbeat < olderThan).ToListAsync();
+            if (!stale.Any()) return 0;
+            dBContext.ActiveRooms.RemoveRange(stale);
+            await dBContext.SaveChangesAsync();
+            return stale.Count;
+        }
+
+        public async Task<bool> DeleteByToken(string token)
+        {
+            var room = await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+            if (room == null) return false;
+            dBContext.ActiveRooms.Remove(room);
+            await dBContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

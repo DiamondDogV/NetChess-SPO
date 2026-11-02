@@ -10,50 +10,89 @@ namespace Chess.Controllers
     [Authorize]
     public class GameController : Controller
     {
-        IActiveRoomService roomService;
-        public GameController(IActiveRoomService roomService) { this.roomService = roomService; }
+        private readonly IActiveRoomService _roomService;
+        public GameController(IActiveRoomService roomService) => _roomService = roomService;
 
-        public IActionResult CreateGame()
-        {
-            return View();
-        }
+        public IActionResult CreateGame() => View();
 
         public async Task<IActionResult> FindRoom()
         {
-            List<ActiveRoom> rooms = (await roomService.GetAllAsync()).Data.ToList();
-            List<ActiveRoomModel> model = new();
-            for (int i = 0; i < rooms.Count; i++)
-            {
-                model.Add(new() { Elo = rooms[i].Elo, Name = rooms[i].Name });
-            }
+            var rooms = (await _roomService.GetAllAsync()).Data?.ToList() ?? new();
+            var model = rooms.Select(r => new ActiveRoomModel { Name = r.Name, Elo = r.Elo }).ToList();
             return View(model);
         }
 
-        public async Task<IActionResult> PlayGame(ChessBoardModel model) 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PlayGame(ChessBoardModel model)
         {
-            if (model.SelectedColor == "White")
-            {
-                model.IsWhite = true;
-            }
-            if (model.SelectedColor == "Black")
-            {
-                model.IsBlack = true;
-            }
             if (model.SelectedColor == "Random")
             {
-                Random rand = new Random();
+                var rand = new Random();
                 model.IsWhite = rand.Next(0, 2) == 1;
                 model.IsBlack = !model.IsWhite;
             }
-
-            await roomService.CreateAsync(new() 
+            else
             {
-                Elo = 10,
-                Name = model.RoomName,
-                Special = "sd"
-            });
+                model.IsWhite = model.SelectedColor == "White";
+                model.IsBlack = !model.IsWhite;
+            }
 
-            return View(model);
+            var token = Guid.NewGuid().ToString("N");
+
+            var entity = new ActiveRoom
+            {
+                Name = model.RoomName,
+                Elo = 10,
+                Special = "sd",
+                Token = token,
+                IsWhite = model.IsWhite,
+            };
+
+            var resp = await _roomService.CreateForTabAsync(entity);
+            if (resp.Code != Domain.Enums.Enums.ResponceCodes.Ok)
+                return BadRequest("Не удалось создать комнату");
+
+            ViewBag.Token = token;
+            return View("OpeningTab");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Board(string token)
+        {
+            if (string.IsNullOrEmpty(token)) return BadRequest();
+
+            var resp = await _roomService.GetByTokenAsync(token);
+            if (resp.Code != Domain.Enums.Enums.ResponceCodes.Ok)
+                return NotFound("Комната не найдена или уже закрыта");
+
+            var room = resp.Data;
+            var model = new ChessBoardModel
+            {
+                RoomName = room.Name,
+                IsWhite = room.IsWhite,
+                IsBlack = !room.IsWhite,
+            };
+            ViewBag.Token = token;
+            return View("PlayGame", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Heartbeat([FromBody] HeartbeatDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.Token)) return BadRequest();
+            var resp = await _roomService.HeartbeatAsync(dto.Token);
+            return resp.Data ? Ok() : NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CloseRoom([FromBody] HeartbeatDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.Token)) return BadRequest();
+            await _roomService.CloseAsync(dto.Token);
+            return Ok();
+        }
+
+        public class HeartbeatDto { public string Token { get; set; } }
     }
 }
