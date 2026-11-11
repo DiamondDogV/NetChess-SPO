@@ -16,7 +16,7 @@ namespace Chess.Domain.Entities
         public bool IsBlack { get; init; }
 
         public byte Price { get; init; } = 8;
-        public bool IsCanJump { get; init; } = false;
+        public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
         public bool IsMy { get; init; }
 
