@@ -11,12 +11,12 @@ namespace Chess.Domain.Entities
 {
     public class Cell : IChess
     {
-        public CMT ChessType { get; init; } = CMT.None;
-        public bool IsBlack { get; init; }
+        public CMT ChessType { get; set; } = CMT.None;
+        public bool IsBlack { get; set; }
 
-        public byte Price { get; init; }
-        public bool IsCanJump { get; init; }
-        public bool IsMy { get; init; }
+        public byte Price { get; set; }
+        public bool IsCanJump { get; set; }
+        public bool IsMy { get; set; }
         public Point Position { get; set; }
 
         public bool CanBeat(in IChess[,] matrix, Point to)

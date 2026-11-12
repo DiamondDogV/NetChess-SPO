@@ -12,14 +12,14 @@ namespace Chess.Domain.Entities
 {
     public class King : IChess
     {
-        public CMT ChessType { get; init; } = CMT.King;
-        public bool IsBlack { get; init; }
+        public CMT ChessType { get; set; } = CMT.King;
+        public bool IsBlack { get; set; }
 
-        public byte Price { get; init; } = 0;
+        public byte Price { get; set; } = 0;
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
         public bool isFirstMove = true;
-        public bool IsMy { get; init; }
+        public bool IsMy { get; set; }
 
         public King(bool isBlask, Point position, bool isMy)
         {

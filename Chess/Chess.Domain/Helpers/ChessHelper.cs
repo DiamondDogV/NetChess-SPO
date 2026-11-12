@@ -109,6 +109,32 @@ namespace Chess.Domain.Helpers
             return isKingUnderCheckNow;
         }
 
+
+        public static IChess[,] CreateStartBoard()
+        {
+            var board = new IChess[8, 8];
+
+            for (int y = 0; y < 8; y++)
+                for (int x = 0; x < 8; x++)
+                    board[y, x] = new Cell();
+
+            CMT[] backRow = { CMT.Roock, CMT.Knight, CMT.Slon, CMT.Ferz, CMT.King, CMT.Slon, CMT.Knight, CMT.Roock };
+
+            for (int x = 0; x < 8; x++)
+            {
+                board[0, x] = CreatePiece(backRow[x], true, new Point(x, 0), false);
+                board[1, x] = CreatePiece(CMT.Pawn, true, new Point(x, 1), false);
+            }
+
+            for (int x = 0; x < 8; x++)
+            {
+                board[6, x] = CreatePiece(CMT.Pawn, false, new Point(x, 6), true);
+                board[7, x] = CreatePiece(backRow[x], false, new Point(x, 7), true);
+            }
+
+            return board;
+        }
+
         public static void CopyMatrix(in IChess[,] matrix, ref IChess[,] matrix2)
         {
             for (int i = 0; i < 8; i++)

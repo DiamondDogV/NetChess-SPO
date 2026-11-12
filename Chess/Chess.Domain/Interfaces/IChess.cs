@@ -11,11 +11,11 @@ namespace Chess.Domain.Interfaces
 {
     public interface IChess
     {
-        CMT ChessType { get; init; }
-        bool IsBlack { get; init; }
+        CMT ChessType { get; set; }
+        bool IsBlack { get; set; }
 
-        byte Price { get; init; }
-        bool IsMy { get; init; }
+        byte Price { get; set; }
+        bool IsMy { get; set; }
         Point Position { get; set; }
 
         void ShowMoves(in IChess[,] matrix, out MovesType[,] movesMatrix);

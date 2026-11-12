@@ -1,9 +1,10 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Chess.Domain.Entities
+@using static Chess.Domain.Enums.Enums
+@model Chess.Models.GameViewModel
+
 @{
+    ViewData["Title"] = "Игра: " + Model.RoomName;
 }
-@model ChessBoardModel
 
 <div class="game-page">
 
@@ -18,7 +19,6 @@
 
     <div class="chess-board">
         @{
-            // Определяем начало и конец циклов в зависимости от цвета
             int startRow = Model.IsWhite ? 0 : 7;
             int endRow = Model.IsWhite ? 8 : -1;
             int rowStep = Model.IsWhite ? 1 : -1;
@@ -32,31 +32,28 @@
         {
             for (int col = startCol; col != endCol; col += colStep)
             {
-                // Цвет клетки зависит от её реальных координат на доске (row + col)
                 string cellColorClass = (row + col) % 2 == 0 ? "cell-light" : "cell-dark";
 
-                string pieceCode = Model.Board[row, col];
+                var piece = Model.Board[row, col];
                 string pieceSymbol = "";
                 string pieceColorClass = "";
 
-                if (pieceCode != null)
+                if (piece != null && piece.ChessType != CMT.None)
                 {
-                    if (pieceCode.StartsWith("w_")) pieceColorClass = "piece-white";
-                    else if (pieceCode.StartsWith("b_")) pieceColorClass = "piece-black";
+                    pieceColorClass = piece.IsBlack ? "piece-black" : "piece-white";
 
-                    char pieceType = pieceCode[2];
-                    switch (pieceType)
+                    switch (piece.ChessType)
                     {
-                        case 'k': pieceSymbol = "♚"; break;
-                        case 'q': pieceSymbol = "♛"; break;
-                        case 'r': pieceSymbol = "♜"; break;
-                        case 'b': pieceSymbol = "♝"; break;
-                        case 'n': pieceSymbol = "♞"; break;
-                        case 'p': pieceSymbol = "♟"; break;
+                        case CMT.King: pieceSymbol = "♚"; break;
+                        case CMT.Ferz: pieceSymbol = "♛"; break;
+                        case CMT.Roock: pieceSymbol = "♜"; break;
+                        case CMT.Slon: pieceSymbol = "♝"; break;
+                        case CMT.Knight: pieceSymbol = "♞"; break;
+                        case CMT.Pawn: pieceSymbol = "♟"; break;
                     }
                 }
 
-                <div class="cell @cellColorClass">
+                <div class="cell @cellColorClass" onclick="onCellClick(@row, @col)">
                     @if (!string.IsNullOrEmpty(pieceSymbol))
                     {
                         <span class="piece @pieceColorClass">@pieceSymbol</span>
@@ -68,9 +65,8 @@
 
 </div>
 
-
 <script>
-    const ROOM_TOKEN = '@ViewBag.Token';
+    const ROOM_TOKEN = '@Model.Token';
     const HEARTBEAT_MS = 5000;
 
     async function heartbeat() {
@@ -90,4 +86,8 @@
         navigator.sendBeacon('/Game/CloseRoom',
             new Blob([JSON.stringify({ token: ROOM_TOKEN })], { type: 'application/json' }));
     });
+
+    function onCellClick(row, col) {
+        console.log("Клик по клетке: row=" + row + ", col=" + col);
+    }
 </script>

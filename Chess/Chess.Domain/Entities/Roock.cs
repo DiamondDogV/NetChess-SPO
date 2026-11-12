@@ -12,14 +12,14 @@ namespace Chess.Domain.Entities
 {
     public class Roock : IChess
     {
-        public CMT ChessType { get; init; } = CMT.Roock;
-        public bool IsBlack { get; init; }
+        public CMT ChessType { get; set; } = CMT.Roock;
+        public bool IsBlack { get; set; }
 
-        public byte Price { get; init; } = 5;
+        public byte Price { get; set; } = 5;
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
         public bool isFirstMove = true;
-        public bool IsMy { get; init; }
+        public bool IsMy { get; set; }
 
         public Roock(bool isBlask, Point position, bool isMy)
         {

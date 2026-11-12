@@ -15,14 +15,14 @@ namespace Chess.Domain.Entities
 {
     public class Pawn : IChess
     {
-        public CMT ChessType { get; init; } = CMT.Pawn;
-        public bool IsBlack { get; init; }
+        public CMT ChessType { get; set; } = CMT.Pawn;
+        public bool IsBlack { get; set; }
 
-        public byte Price { get; init; } = 1;
+        public byte Price { get; set; } = 1;
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
         bool isFirstMove = true;
-        public bool IsMy { get; init; }
+        public bool IsMy { get; set; }
 
 
 

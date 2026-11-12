@@ -12,13 +12,13 @@ namespace Chess.Domain.Entities
 {
     public class Ferz : IChess
     {
-        public CMT ChessType { get; init; } = CMT.Ferz;
-        public bool IsBlack { get; init; }
+        public CMT ChessType { get; set; } = CMT.Ferz;
+        public bool IsBlack { get; set; }
 
-        public byte Price { get; init; } = 8;
+        public byte Price { get; set; } = 8;
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
-        public bool IsMy { get; init; }
+        public bool IsMy { get; set; }
 
         public Ferz(bool isBlask, Point position, bool isMy)
         {

@@ -1,9 +1,13 @@
 ﻿using Chess.Domain.Entities;
+using Chess.Domain.Helpers;
+using Chess.Domain.Interfaces;
 using Chess.Models;
+using Chess.Service.Implementations;
 using Chess.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
+using static Chess.Domain.Enums.Enums;
 
 namespace Chess.Controllers
 {
@@ -11,7 +15,8 @@ namespace Chess.Controllers
     public class GameController : Controller
     {
         private readonly IActiveRoomService _roomService;
-        public GameController(IActiveRoomService roomService) => _roomService = roomService;
+        private readonly IUserService _userService;
+        public GameController(IActiveRoomService roomService, IUserService userService) => (_roomService, _userService) = (roomService, userService);
 
         public IActionResult CreateGame() => View();
 
@@ -20,6 +25,17 @@ namespace Chess.Controllers
             var rooms = (await _roomService.GetAllAsync()).Data?.ToList() ?? new();
             var model = rooms.Select(r => new ActiveRoomModel { Name = r.Name, Elo = r.Elo }).ToList();
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> JoinRoom(string roomName)
+        {
+            var rooms = (await _roomService.GetAllAsync()).Data;
+            var room = rooms.FirstOrDefault(r => r.Name == roomName);
+
+            if (room == null) return NotFound("Комната не найдена");
+
+            return RedirectToAction("Board", new { token = room.Token });
         }
 
         [HttpPost]
@@ -39,12 +55,29 @@ namespace Chess.Controllers
             }
 
             var token = Guid.NewGuid().ToString("N");
+            var board = ChessHelper.CreateStartBoard();
+            if (model.IsBlack)
+            {
+                SwitchTurn(board);
+            }
+            string boardData = ChessHelper.Serialize(board);
+
+            int playerElo = 100;
+            string userIdStr = HttpContext.Session.GetString("UserId");
+            if (long.TryParse(userIdStr, out long userId))
+            {
+                var userResp = await _userService.GetByIdAsync(userId);
+                if (userResp.Code == Domain.Enums.Enums.ResponceCodes.Ok && userResp.Data != null)
+                {
+                    playerElo = userResp.Data.EloRating;
+                }
+            }
 
             var entity = new ActiveRoom
             {
                 Name = model.RoomName,
-                Elo = 10,
-                Special = "sd",
+                Elo = playerElo,
+                Special = boardData,
                 Token = token,
                 IsWhite = model.IsWhite,
             };
@@ -63,17 +96,34 @@ namespace Chess.Controllers
             if (string.IsNullOrEmpty(token)) return BadRequest();
 
             var resp = await _roomService.GetByTokenAsync(token);
-            if (resp.Code != Domain.Enums.Enums.ResponceCodes.Ok)
-                return NotFound("Комната не найдена или уже закрыта");
+            if (resp.Code != ResponceCodes.Ok)
+                return NotFound("Комната не найдена");
 
             var room = resp.Data;
-            var model = new ChessBoardModel
+            var board = ChessHelper.Deserialize(room.Special);
+
+            bool currentPlayerIsWhite = room.IsWhite;
+
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    if (board[y, x].ChessType != CMT.None)
+                    {
+                        board[y, x].IsMy = (board[y, x].IsBlack != currentPlayerIsWhite);
+                    }
+                }
+            }
+
+            var model = new GameViewModel
             {
                 RoomName = room.Name,
-                IsWhite = room.IsWhite,
-                IsBlack = !room.IsWhite,
+                Token = token,
+                Board = board,
+                MovesMatrix = new MovesType[8, 8],
+                IsWhite = currentPlayerIsWhite
             };
-            ViewBag.Token = token;
+
             return View("PlayGame", model);
         }
 
@@ -94,5 +144,12 @@ namespace Chess.Controllers
         }
 
         public class HeartbeatDto { public string Token { get; set; } }
+        private void SwitchTurn(IChess[,] board)
+        {
+            for (int y = 0; y < 8; y++)
+                for (int x = 0; x < 8; x++)
+                    if (board[y, x].ChessType != CMT.None)
+                        board[y, x].IsMy = !board[y, x].IsMy;
+        }
     }
 }

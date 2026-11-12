@@ -13,13 +13,13 @@ namespace Chess.Domain.Entities
 {
     public class Knight : IChess
     {
-        public CMT ChessType { get; init; } = CMT.Knight;
-        public bool IsBlack { get; init; }
+        public CMT ChessType { get; set; } = CMT.Knight;
+        public bool IsBlack { get; set; }
 
-        public byte Price { get; init; } = 3;
+        public byte Price { get; set; } = 3;
         public bool IsCanJump { get; set; } = true;
         public Point Position { get; set; }
-        public bool IsMy { get; init; }
+        public bool IsMy { get; set; }
 
         public Knight(bool isBlask, Point position, bool isMy)
         {
