@@ -32,8 +32,9 @@ namespace Chess.Controllers
         {
             var rooms = (await _roomService.GetAllAsync()).Data;
             var room = rooms.FirstOrDefault(r => r.Name == roomName);
-
             if (room == null) return NotFound("Комната не найдена");
+
+            HttpContext.Session.SetString($"Role_{room.Token}", "Guest");
 
             return RedirectToAction("Board", new { token = room.Token });
         }
@@ -56,10 +57,6 @@ namespace Chess.Controllers
 
             var token = Guid.NewGuid().ToString("N");
             var board = ChessHelper.CreateStartBoard();
-            if (model.IsBlack)
-            {
-                SwitchTurn(board);
-            }
             string boardData = ChessHelper.Serialize(board);
 
             int playerElo = 100;
@@ -86,6 +83,8 @@ namespace Chess.Controllers
             if (resp.Code != Domain.Enums.Enums.ResponceCodes.Ok)
                 return BadRequest("Не удалось создать комнату");
 
+            HttpContext.Session.SetString($"Role_{token}", "Owner");
+
             ViewBag.Token = token;
             return View("OpeningTab");
         }
@@ -96,13 +95,19 @@ namespace Chess.Controllers
             if (string.IsNullOrEmpty(token)) return BadRequest();
 
             var resp = await _roomService.GetByTokenAsync(token);
-            if (resp.Code != ResponceCodes.Ok)
+            if (resp.Code != Domain.Enums.Enums.ResponceCodes.Ok)
                 return NotFound("Комната не найдена");
 
             var room = resp.Data;
             var board = ChessHelper.Deserialize(room.Special);
 
-            bool currentPlayerIsWhite = room.IsWhite;
+            string role = HttpContext.Session.GetString($"Role_{token}") ?? "Owner";
+            bool playerIsWhite = room.IsWhite;
+
+            if (role == "Guest")
+            {
+                playerIsWhite = !room.IsWhite;
+            }
 
             for (int y = 0; y < 8; y++)
             {
@@ -110,7 +115,7 @@ namespace Chess.Controllers
                 {
                     if (board[y, x].ChessType != CMT.None)
                     {
-                        board[y, x].IsMy = (board[y, x].IsBlack != currentPlayerIsWhite);
+                        board[y, x].IsMy = (board[y, x].IsBlack != playerIsWhite);
                     }
                 }
             }
@@ -121,11 +126,12 @@ namespace Chess.Controllers
                 Token = token,
                 Board = board,
                 MovesMatrix = new MovesType[8, 8],
-                IsWhite = currentPlayerIsWhite
+                IsWhite = playerIsWhite
             };
 
             return View("PlayGame", model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Heartbeat([FromBody] HeartbeatDto dto)
