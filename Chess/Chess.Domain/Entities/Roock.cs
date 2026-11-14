@@ -18,11 +18,12 @@ namespace Chess.Domain.Entities
         public byte Price { get; set; } = 5;
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
-        public bool isFirstMove = true;
+        public bool IsFirstMove { get; set; } = true;
         public bool IsMy { get; set; }
 
-        public Roock(bool isBlask, Point position, bool isMy)
+        public Roock(bool isBlask, Point position, bool isMy, bool isFirstMove)
         {
+            IsFirstMove = isFirstMove;
             IsBlack = isBlask;
             Position = position;
             IsMy = isMy;
@@ -93,7 +94,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[i, Position.X].ChessType != CMT.None && (i == to.Y && Position.X == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
 
@@ -104,7 +105,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[i, Position.X].ChessType != CMT.None && (i == to.Y && Position.X == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[i, Position.X].ChessType != CMT.None && !(i == to.Y && Position.X == to.X))
@@ -115,7 +116,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[Position.Y, i].ChessType != CMT.None && (Position.Y == to.Y && i == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[Position.Y, i].ChessType != CMT.None && !(Position.Y == to.Y && i == to.X))
@@ -125,7 +126,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[Position.Y, i].ChessType != CMT.None && (Position.Y == to.Y && i == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[Position.Y, i].ChessType != CMT.None && !(Position.Y == to.Y && i == to.X))
@@ -142,7 +143,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[i, Position.X].ChessType == CMT.None && (i == to.Y && Position.X == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[i, Position.X].ChessType != CMT.None && !(i == to.Y && Position.X == to.X))
@@ -152,7 +153,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[i, Position.X].ChessType == CMT.None && (i == to.Y && Position.X == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[i, Position.X].ChessType != CMT.None && !(i == to.Y && Position.X == to.X))
@@ -163,7 +164,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[Position.Y, i].ChessType == CMT.None && (Position.Y == to.Y && i == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[Position.Y, i].ChessType != CMT.None && !(Position.Y == to.Y && i == to.X))
@@ -173,7 +174,7 @@ namespace Chess.Domain.Entities
             {
                 if (matrix[Position.Y, i].ChessType == CMT.None && (Position.Y == to.Y && i == to.X))
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return (true);
                 }
                 if (matrix[Position.Y, i].ChessType != CMT.None && !(Position.Y == to.Y && i == to.X))

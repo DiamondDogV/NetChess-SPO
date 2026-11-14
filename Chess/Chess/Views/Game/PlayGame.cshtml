@@ -77,7 +77,7 @@
     let selectedPiece = null;
     let currentBoardState = '@ChessHelper.Serialize(Model.Board)';
 
-   /* async function heartbeat() {
+    async function heartbeat() {
         try {
             await fetch('/Game/Heartbeat', {
                 method: 'POST',
@@ -87,7 +87,7 @@
         } catch (e) { }
     }
     heartbeat();
-    setInterval(heartbeat, HEARTBEAT_MS);*/
+    setInterval(heartbeat, HEARTBEAT_MS);
 
     function highlightMoves(moves) {
         document.querySelectorAll('.cell').forEach(c => c.style.boxShadow = 'none');

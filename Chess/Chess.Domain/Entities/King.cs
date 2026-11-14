@@ -18,11 +18,12 @@ namespace Chess.Domain.Entities
         public byte Price { get; set; } = 0;
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
-        public bool isFirstMove = true;
+        public bool IsFirstMove { get; set; }
         public bool IsMy { get; set; }
 
-        public King(bool isBlask, Point position, bool isMy)
+        public King(bool isBlask, Point position, bool isMy, bool isFirstMove)
         {
+            IsFirstMove = isFirstMove;
             IsBlack = isBlask;
             Position = position;
             IsMy = isMy;
@@ -30,7 +31,7 @@ namespace Chess.Domain.Entities
 
         public bool CanMakeRokir(in IChess[,] matrix, Point to)
         {
-            if (isFirstMove && (matrix[to.Y, to.X] as Roock)?.isFirstMove == true)
+            if (IsFirstMove && (matrix[to.Y, to.X] as Roock)?.IsFirstMove == true)
             {
                 if (Position.X - to.X <= 0)
                 {
@@ -58,7 +59,7 @@ namespace Chess.Domain.Entities
             int targetY = (emulation.Y != -1) ? emulation.Y : Position.Y;
             Point targetPoint = new Point(targetX, targetY);
 
-            using (FileStream file = new("debug", FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            /*using (FileStream file = new("debug", FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
                 using (StreamWriter wr = new(file))
                 {
@@ -78,7 +79,7 @@ namespace Chess.Domain.Entities
                     }
 
                 }
-            }
+            }*/
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -138,7 +139,7 @@ namespace Chess.Domain.Entities
               (Position.Y == to.Y) && (Position.X - 1 == to.X) ||
               (Position.Y == to.Y) && (Position.X + 1 == to.X))
             {
-                isFirstMove = false;
+                IsFirstMove = false;
                 return (true);
             }
             return (false);
@@ -155,7 +156,7 @@ namespace Chess.Domain.Entities
                (Position.Y == to.Y) && (Position.X - 1 == to.X) ||
                (Position.Y == to.Y) && (Position.X + 1 == to.X))
             {
-                isFirstMove = false;
+                IsFirstMove = false;
                 return (true);
             }
             return (false);

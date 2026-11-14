@@ -18,6 +18,7 @@ namespace Chess.Domain.Entities
         public bool IsCanJump { get; set; }
         public bool IsMy { get; set; }
         public Point Position { get; set; }
+        public bool IsFirstMove { get; set; }
 
         public bool CanBeat(in IChess[,] matrix, Point to)
         {

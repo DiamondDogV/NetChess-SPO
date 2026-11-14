@@ -1,6 +1,8 @@
 ﻿using Chess.Domain.Interfaces;
 using System.Drawing;
+using System.Net.NetworkInformation;
 using static Chess.Domain.Enums.Enums;
+using static Chess.Domain.Helpers.ChessHelper;
 
 namespace Chess.Domain.Entities
 {
@@ -12,10 +14,12 @@ namespace Chess.Domain.Entities
         public bool IsCanJump { get; set; } = false;
         public Point Position { get; set; }
         public bool IsMy { get; set; }
-        private bool isFirstMove = true;
 
-        public Pawn(bool isBlack, Point position, bool isMy)
+        public bool IsFirstMove { get; set; }
+
+        public Pawn(bool isBlack, Point position, bool isMy, bool isFirstMove)
         {
+            IsFirstMove = isFirstMove;
             IsBlack = isBlack;
             Position = position;
             IsMy = isMy;
@@ -23,21 +27,22 @@ namespace Chess.Domain.Entities
 
         public bool CanMove(in IChess[,] matrix, Point to)
         {
-            int direction = IsBlack ? 1 : -1;
+            int direction = IsBlack ? -1 : 1;
 
-            if (to.X == Position.X && to.Y == Position.Y + direction && matrix[to.Y, to.X].ChessType == CMT.None)
+            King king = FindMyKing(matrix);
+            if (IsFirstMove)
             {
-                isFirstMove = false;
-                return true;
-            }
-
-            if (isFirstMove && to.X == Position.X && to.Y == Position.Y + (2 * direction))
-            {
-                if (matrix[Position.Y + direction, Position.X].ChessType == CMT.None && matrix[to.Y, to.X].ChessType == CMT.None)
+                if (((Position.Y - 2* direction == to.Y) && matrix[Position.Y - 2* direction, Position.X].ChessType == CMT.None) && matrix[Position.Y - direction, Position.X].ChessType == CMT.None
+                    && Position.X == to.X)
                 {
-                    isFirstMove = false;
+                    IsFirstMove = false;
                     return true;
                 }
+            }
+            if ((Position.Y - direction == to.Y) && Position.X == to.X)
+            {
+                IsFirstMove = false;
+                return true;
             }
             return false;
         }
@@ -54,7 +59,7 @@ namespace Chess.Domain.Entities
                 {
                     movesMatrix[nextY, Position.X] = MovesType.Move;
 
-                    if (isFirstMove && Position.Y + (2 * direction) >= 0 && Position.Y + (2 * direction) <= 7)
+                    if (IsFirstMove && Position.Y + (2 * direction) >= 0 && Position.Y + (2 * direction) <= 7)
                     {
                         if (matrix[Position.Y + (2 * direction), Position.X].ChessType == CMT.None)
                         {

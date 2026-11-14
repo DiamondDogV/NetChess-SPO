@@ -25,15 +25,15 @@ namespace Chess.Domain.Helpers
             return null;
         }
 
-        static IChess GetChess(Type type, bool isBlack, Point position, bool isMy)
+        static IChess GetChess(Type type, bool isBlack, Point position, bool isMy, bool isFirstMove)
         {
             if (type == typeof(Cell)) return new Cell();
-            else if (type == typeof(Ferz)) return new Ferz(isBlack, position, isMy);
-            else if (type == typeof(King)) return new King(isBlack, position, isMy);
-            else if (type == typeof(Knight)) return new Knight(isBlack, position, isMy);
-            else if (type == typeof(Pawn)) return new Pawn(isBlack, position, isMy);
-            else if (type == typeof(Roock)) return new Roock(isBlack, position, isMy);
-            else if (type == typeof(Slon)) return new Slon(isBlack, position, isMy);
+            else if (type == typeof(Ferz)) return new Ferz(isBlack, position, isMy, isFirstMove);
+            else if (type == typeof(King)) return new King(isBlack, position, isMy, isFirstMove);
+            else if (type == typeof(Knight)) return new Knight(isBlack, position, isMy, isFirstMove);
+            else if (type == typeof(Pawn)) return new Pawn(isBlack, position, isMy, isFirstMove);
+            else if (type == typeof(Roock)) return new Roock(isBlack, position, isMy, isFirstMove);
+            else if (type == typeof(Slon)) return new Slon(isBlack, position, isMy, isFirstMove);
             return new Cell();
         }
 
@@ -122,14 +122,14 @@ namespace Chess.Domain.Helpers
 
             for (int x = 0; x < 8; x++)
             {
-                board[0, x] = CreatePiece(backRow[x], true, new Point(x, 0), false);
-                board[1, x] = CreatePiece(CMT.Pawn, true, new Point(x, 1), false);
+                board[0, x] = CreatePiece(backRow[x], true, new Point(x, 0), false, true);
+                board[1, x] = CreatePiece(CMT.Pawn, true, new Point(x, 1), false, true);
             }
 
             for (int x = 0; x < 8; x++)
             {
-                board[6, x] = CreatePiece(CMT.Pawn, false, new Point(x, 6), true);
-                board[7, x] = CreatePiece(backRow[x], false, new Point(x, 7), true);
+                board[6, x] = CreatePiece(CMT.Pawn, false, new Point(x, 6), true, true);
+                board[7, x] = CreatePiece(backRow[x], false, new Point(x, 7), true, true);
             }
 
             return board;
@@ -141,7 +141,7 @@ namespace Chess.Domain.Helpers
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    matrix2[i, j] = GetChess(matrix[i, j].GetType(), matrix[i, j].IsBlack, matrix[i, j].Position, matrix[i, j].IsMy);
+                    matrix2[i, j] = GetChess(matrix[i, j].GetType(), matrix[i, j].IsBlack, matrix[i, j].Position, matrix[i, j].IsMy, matrix[i, j].IsFirstMove);
                 }
             }
         }
@@ -166,24 +166,24 @@ namespace Chess.Domain.Helpers
             }
         }
 
-        public static IChess CreatePiece(CMT type, bool isBlack, Point position, bool isMy)
+        public static IChess CreatePiece(CMT type, bool isBlack, Point position, bool isMy, bool isFirstMove)
         {
             return type switch
             {
                 CMT.None => new Cell(),
-                CMT.Ferz => new Ferz(isBlack, position, isMy),
-                CMT.King => new King(isBlack, position, isMy),
-                CMT.Knight => new Knight(isBlack, position, isMy),
-                CMT.Pawn => new Pawn(isBlack, position, isMy),
-                CMT.Roock => new Roock(isBlack, position, isMy),
-                CMT.Slon => new Slon(isBlack, position, isMy),
+                CMT.Ferz => new Ferz(isBlack, position, isMy, isFirstMove),
+                CMT.King => new King(isBlack, position, isMy, isFirstMove),
+                CMT.Knight => new Knight(isBlack, position, isMy, isFirstMove),
+                CMT.Pawn => new Pawn(isBlack, position, isMy, isFirstMove),
+                CMT.Roock => new Roock(isBlack, position, isMy, isFirstMove),
+                CMT.Slon => new Slon(isBlack, position, isMy, isFirstMove),
                 _ => new Cell()
             };
         }
-
+        
         public static string Serialize(IChess[,] board)
         {
-            var sb = new StringBuilder(64 * 3);
+            var sb = new StringBuilder(64 * 4);
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
@@ -191,7 +191,7 @@ namespace Chess.Domain.Helpers
                     var piece = board[y, x];
                     if (piece.ChessType == CMT.None)
                     {
-                        sb.Append("___"); 
+                        sb.Append("____");
                     }
                     else
                     {
@@ -207,7 +207,8 @@ namespace Chess.Domain.Helpers
                             _ => "X"
                         };
                         string isMy = piece.IsMy ? "1" : "0";
-                        sb.Append(color + type + isMy);
+                        string isFirstMove = piece.IsFirstMove ? "1" : "0";
+                        sb.Append(color + type + isMy + isFirstMove);
                     }
                 }
             }
@@ -217,7 +218,7 @@ namespace Chess.Domain.Helpers
         public static IChess[,] Deserialize(string data)
         {
             var board = new IChess[8, 8];
-            if (string.IsNullOrEmpty(data) || data.Length < 64 * 3)
+            if (string.IsNullOrEmpty(data) || data.Length < 64 * 4)
             {
                 for (int y = 0; y < 8; y++)
                     for (int x = 0; x < 8; x++)
@@ -230,10 +231,10 @@ namespace Chess.Domain.Helpers
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    string chunk = data.Substring(index, 3);
-                    index += 3;
+                    string chunk = data.Substring(index, 4);
+                    index += 4;
 
-                    if (chunk == "___")
+                    if (chunk == "____")
                     {
                         board[y, x] = new Cell();
                     }
@@ -241,6 +242,7 @@ namespace Chess.Domain.Helpers
                     {
                         bool isBlack = chunk[0] == 'b';
                         bool isMy = chunk[2] == '1';
+                        bool isFirstMove = chunk[3] == '1';
 
                         CMT type = chunk[1] switch
                         {
@@ -253,7 +255,7 @@ namespace Chess.Domain.Helpers
                             _ => CMT.None
                         };
 
-                        board[y, x] = ChessHelper.CreatePiece(type, isBlack, new System.Drawing.Point(x, y), isMy);
+                        board[y, x] = ChessHelper.CreatePiece(type, isBlack, new System.Drawing.Point(x, y), isMy, isFirstMove);
                     }
                 }
             }

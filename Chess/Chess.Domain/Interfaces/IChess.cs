@@ -18,6 +18,8 @@ namespace Chess.Domain.Interfaces
         bool IsMy { get; set; }
         Point Position { get; set; }
 
+        bool IsFirstMove { get; set; }
+
         void ShowMoves(in IChess[,] matrix, out MovesType[,] movesMatrix);
         bool CanBeat(in IChess[,] matrix, Point to);
         bool CanMove(in IChess[,] matrix, Point to);

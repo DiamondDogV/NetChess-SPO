@@ -20,8 +20,11 @@ namespace Chess.Domain.Entities
         public Point Position { get; set; }
         public bool IsMy { get; set; }
 
-        public Slon(bool isBlask, Point position, bool isMy)
+        public bool IsFirstMove { get; set; } = true;
+
+        public Slon(bool isBlask, Point position, bool isMy, bool isFirstMove)
         {
+            IsFirstMove = isFirstMove;
             IsBlack = isBlask;
             Position = position;
             IsMy = isMy;
