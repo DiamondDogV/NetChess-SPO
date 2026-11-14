@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Chess.Dal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7a994347ab61b79e7e34d8fe5fb2792a5c1acc3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c56b02358ce4df1adcfc6b2b715dbdc9673c7e45")]
 [assembly: System.Reflection.AssemblyProductAttribute("Chess.Dal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Chess.Dal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

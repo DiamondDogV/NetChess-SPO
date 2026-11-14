@@ -58,7 +58,7 @@ namespace Chess
                 options.Cookie.IsEssential = true;
             });
 
-            builder.Services.AddHostedService<RoomCleanupService>();
+           // builder.Services.AddHostedService<RoomCleanupService>();
 
             var app = builder.Build();
 

@@ -93,17 +93,89 @@ namespace Chess.Service.Implementations
 
         public async Task<IBaseResponce<ActiveRoom>> GetByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var room = await rep.SelectById(id);
+                if (room != null)
+                {
+                    return new BaseResponce<ActiveRoom>()
+                    {
+                        Data = room,
+                        Code = ResponceCodes.Ok,
+                    };
+                }
+                return new BaseResponce<ActiveRoom>()
+                {
+                    Data = null,
+                    Code = ResponceCodes.NullTable,
+                };
+            }
+            catch (Exception)
+            {
+                return new BaseResponce<ActiveRoom>()
+                {
+                    Data = null,
+                    Code = ResponceCodes.UnCatchedError,
+                };
+            }
         }
 
         public async Task<IBaseResponce<bool>> RemoveAsync(ActiveRoom entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (entity != null)
+                {
+                    bool res = await rep.Delete(entity);
+                    return new BaseResponce<bool>()
+                    {
+                        Data = res,
+                        Code = res ? ResponceCodes.Ok : ResponceCodes.BoolError,
+                    };
+                }
+                return new BaseResponce<bool>()
+                {
+                    Data = false,
+                    Code = ResponceCodes.InvalidParameter,
+                };
+            }
+            catch (Exception)
+            {
+                return new BaseResponce<bool>()
+                {
+                    Data = false,
+                    Code = ResponceCodes.UnCatchedError,
+                };
+            }
         }
 
         public async Task<IBaseResponce<bool>> UpdateAsync(ActiveRoom entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (entity != null)
+                {
+                    bool res = await rep.Update(entity);
+                    return new BaseResponce<bool>()
+                    {
+                        Data = res,
+                        Code = res ? ResponceCodes.Ok : ResponceCodes.BoolError,
+                    };
+                }
+                return new BaseResponce<bool>()
+                {
+                    Data = false,
+                    Code = ResponceCodes.InvalidParameter,
+                };
+            }
+            catch (Exception)
+            {
+                return new BaseResponce<bool>()
+                {
+                    Data = false,
+                    Code = ResponceCodes.UnCatchedError,
+                };
+            }
         }
 
 

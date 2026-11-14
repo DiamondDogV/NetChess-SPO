@@ -18,5 +18,9 @@ namespace Chess.Domain.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime LastHeartbeat { get; set; }
         public bool IsWhite { get; set; }
+
+        public bool IsWhiteTurn { get; set; }
+        public bool IsMate { get; set; }
+
     }
 }

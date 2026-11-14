@@ -10,6 +10,6 @@ namespace Chess.Models
         public IChess[,] Board { get; set; }
         public MovesType[,] MovesMatrix { get; set; }
         public bool IsWhite { get; set; }
-
+        public string Role { get; set; }
     }
 }

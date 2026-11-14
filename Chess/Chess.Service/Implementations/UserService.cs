@@ -129,7 +129,7 @@ namespace Chess.Service.Implementations
             {
                 if (email != null)
                 {
-                    User user = await rep.GetByEmailAndPass(email,pass);
+                    User user = await rep.GetByEmailAndPass(email, pass);
                     if (user != null)
                     {
                         return new BaseResponce<User>()
@@ -165,7 +165,34 @@ namespace Chess.Service.Implementations
 
         public async Task<IBaseResponce<User>> GetByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                User user = await rep.SelectById(id);
+                if (user != null)
+                {
+                    return new BaseResponce<User>()
+                    {
+                        Data = user,
+                        Code = Domain.Enums.Enums.ResponceCodes.Ok,
+                    };
+                }
+                else
+                {
+                    return new BaseResponce<User>()
+                    {
+                        Data = null,
+                        Code = Domain.Enums.Enums.ResponceCodes.UserDoesntExist,
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                return new BaseResponce<User>()
+                {
+                    Data = null,
+                    Code = Domain.Enums.Enums.ResponceCodes.UnCatchedError,
+                };
+            }
         }
 
         public async Task<IBaseResponce<bool>> RemoveAsync(User entity)

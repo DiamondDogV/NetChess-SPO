@@ -1,4 +1,5 @@
 ﻿@using Chess.Domain.Entities
+@using Chess.Domain.Helpers
 @using static Chess.Domain.Enums.Enums
 @model Chess.Models.GameViewModel
 
@@ -8,12 +9,20 @@
 
 <div class="game-page">
 
+    @{
+        bool isGameOver = ChessHelper.isMat(Model.Board, new System.Drawing.Point(-1, -1));
+    }
+
+    @if (isGameOver)
+    {
+        <div style="background-color: #e74c3c; color: white; text-align: center; font-size: 36px; font-weight: bold; padding: 20px; margin: 10px auto; max-width: 600px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); letter-spacing: 2px;">
+            МАТ! ИГРА ОКОНЧЕНА
+        </div>
+    }
     <div class="info-panel">
         <a href="/" class="btn-back">Назад</a>
-
         <div class="chess-room-title">
-            <span>Название комнаты:</span>
-            @Model.RoomName
+            <span>Название комнаты:</span> @Model.RoomName
         </div>
     </div>
 
@@ -33,7 +42,6 @@
             for (int col = startCol; col != endCol; col += colStep)
             {
                 string cellColorClass = (row + col) % 2 == 0 ? "cell-light" : "cell-dark";
-
                 var piece = Model.Board[row, col];
                 string pieceSymbol = "";
                 string pieceColorClass = "";
@@ -41,7 +49,6 @@
                 if (piece != null && piece.ChessType != CMT.None)
                 {
                     pieceColorClass = piece.IsBlack ? "piece-black" : "piece-white";
-
                     switch (piece.ChessType)
                     {
                         case CMT.King: pieceSymbol = "♚"; break;
@@ -53,7 +60,7 @@
                     }
                 }
 
-                <div class="cell @cellColorClass" onclick="onCellClick(@row, @col)">
+                <div class="cell @cellColorClass" id="cell-@row-@col" onclick="onCellClick(@row, @col)">
                     @if (!string.IsNullOrEmpty(pieceSymbol))
                     {
                         <span class="piece @pieceColorClass">@pieceSymbol</span>
@@ -62,14 +69,15 @@
             }
         }
     </div>
-
 </div>
 
 <script>
     const ROOM_TOKEN = '@Model.Token';
     const HEARTBEAT_MS = 5000;
+    let selectedPiece = null;
+    let currentBoardState = '@ChessHelper.Serialize(Model.Board)';
 
-    async function heartbeat() {
+   /* async function heartbeat() {
         try {
             await fetch('/Game/Heartbeat', {
                 method: 'POST',
@@ -78,16 +86,74 @@
             });
         } catch (e) { }
     }
-
     heartbeat();
-    const hbTimer = setInterval(heartbeat, HEARTBEAT_MS);
+    setInterval(heartbeat, HEARTBEAT_MS);*/
 
-    window.addEventListener('beforeunload', () => {
-        navigator.sendBeacon('/Game/CloseRoom',
-            new Blob([JSON.stringify({ token: ROOM_TOKEN })], { type: 'application/json' }));
-    });
-
-    function onCellClick(row, col) {
-        console.log("Клик по клетке: row=" + row + ", col=" + col);
+    function highlightMoves(moves) {
+        document.querySelectorAll('.cell').forEach(c => c.style.boxShadow = 'none');
+        moves.forEach(m => {
+            const cell = document.getElementById(`cell-${m[1]}-${m[0]}`);
+            if (cell) cell.style.boxShadow = 'inset 0 0 0 3px rgba(0, 255, 0, 0.7)';
+        });
     }
+
+    async function onCellClick(row, col) {
+        if (selectedPiece) {
+            if (selectedPiece.row === row && selectedPiece.col === col) {
+                selectedPiece = null;
+                highlightMoves([]);
+                return;
+            }
+            await makeMove(selectedPiece.row, selectedPiece.col, row, col);
+        } else {
+            const res = await fetch('/Game/SelectPiece', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Token: ROOM_TOKEN, FromX: col, FromY: row })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedPiece = { row: row, col: col };
+                highlightMoves(data.moves);
+            } else {
+                const errorText = await res.text();
+                alert('Ошибка выбора: ' + errorText);
+            }
+        }
+    }
+
+        async function makeMove(fromY, fromX, toY, toX) {
+        const res = await fetch('/Game/MakeMove', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ Token: ROOM_TOKEN, FromX: fromX, FromY: fromY, ToX: toX, ToY: toY })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            if (data.isMate) {
+                alert(data.message);
+            }
+            window.location.href = window.location.href;
+        } else {
+            const errorText = await res.text();
+            alert('Ошибка хода: ' + errorText);
+            selectedPiece = null;
+            highlightMoves([]);
+        }
+    }
+
+    async function syncBoard() {
+        try {
+            const res = await fetch(`/Game/GetBoardState?token=${ROOM_TOKEN}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.state !== currentBoardState) {
+                    window.location.href = window.location.href;
+                }
+            }
+        } catch (e) { }
+    }
+    //setInterval(syncBoard, 2000);
 </script>

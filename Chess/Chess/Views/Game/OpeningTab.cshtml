@@ -3,18 +3,10 @@
 }
 <div style="padding:40px;text-align:center;">
     <p>Открываем игровую вкладку...</p>
-    <p><a href="/Game/Board?token=@ViewBag.Token">Открыть вручную</a></p>
 </div>
 <script>
     (function () {
-        const url = '/Game/Board?token=' + encodeURIComponent('@ViewBag.Token');
-        const w = window.open(url, '_blank');
-        // если попап заблокирован — пользователь нажмёт ссылку
-        setTimeout(() => {
-            if (w && !w.closed) {
-                // можно закрыть текущую вкладку (опционально)
-                // window.close();
-            }
-        }, 300);
+        const url = '/Game/Board?token=@ViewBag.Token&creatorToken=@ViewBag.CreatorToken';
+        window.open(url, '_blank');
     })();
 </script>
