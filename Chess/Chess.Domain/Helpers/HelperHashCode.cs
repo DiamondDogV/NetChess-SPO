@@ -15,6 +15,8 @@ namespace Chess.Domain.Helpers
     {
         public static string HashString(string str)
         {
+            if (str == null) 
+                return string.Empty;
             using (SHA256 sha256 = Create())
             {
                 var hashBytes = sha256.ComputeHash(UTF8.GetBytes(str));

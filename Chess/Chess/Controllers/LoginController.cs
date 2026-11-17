@@ -30,7 +30,7 @@ namespace Chess.Controllers
 
         public async Task<IActionResult> EnterUser(UserModel model)
         {
-            if (model != null)
+            if (ModelState.IsValid)
             {
                 IBaseResponce<User> response = await userServise.GetByEmailAndPassAsync(model.Email,HelperHashCode.HashString(model.Password));
                 switch (response.Code)
@@ -55,11 +55,11 @@ namespace Chess.Controllers
                     default:
                         break;
                 }
-                return Register();
+                return Redirect("/Login/Login");
             }
             else
             {
-                return Register();
+                return View("Login", model);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Chess.Controllers
 
         public async Task<IActionResult> CreateNewUser(UserModel model) 
         {
-            if (model!=null)
+            if (ModelState.IsValid)
             {
                 User user = new()
                 {
@@ -103,11 +103,11 @@ namespace Chess.Controllers
                     default:
                         break;
                 }
-                return Register();
+                return Redirect("/Login/Register");
             }
             else
             {
-                return Register();
+                return View("Register", model);
             }
         }
     }

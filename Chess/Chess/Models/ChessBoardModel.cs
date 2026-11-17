@@ -1,7 +1,12 @@
-﻿namespace Chess.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Chess.Models
 {
     public class ChessBoardModel
     {
+        [Required]
+        [MaxLength(45, ErrorMessage = "Слишком длинное имя комнаты")]
+        [MinLength(3, ErrorMessage = "Слишком короткое имя комнаты")]
         public string RoomName { get; set; }
         public bool IsFriendlyRoom { get; set; }
         public bool IsWhite { get; set; }
