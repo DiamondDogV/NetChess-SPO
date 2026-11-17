@@ -9,12 +9,12 @@ namespace Chess.Models
         [MaxLength(45, ErrorMessage = "Слишком длинное имя")]
         [MinLength(3, ErrorMessage = "Слишком короткое имя")]
         public string Login { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Неверный формат Email")]
         [StringLength(45, ErrorMessage = "Неккоректная длина Email", MinimumLength = 3)]
         public string Email { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Неверный формат пароля")]
         public string Password { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Неверный формат отображаемого имени")]
         public string DisplayName { get; set; }
     }
 }

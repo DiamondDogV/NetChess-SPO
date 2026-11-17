@@ -4,7 +4,7 @@ namespace Chess.Models
 {
     public class ChessBoardModel
     {
-        [Required]
+        [Required(ErrorMessage = "Неверный формат имени комнаты")]
         [MaxLength(45, ErrorMessage = "Слишком длинное имя комнаты")]
         [MinLength(3, ErrorMessage = "Слишком короткое имя комнаты")]
         public string RoomName { get; set; }
