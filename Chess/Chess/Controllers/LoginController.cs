@@ -28,7 +28,7 @@ namespace Chess.Controllers
         }
 
 
-        public async Task<IActionResult> EnterUser(UserModel model)
+        public async Task<IActionResult> EnterUser(UserLoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -63,9 +63,7 @@ namespace Chess.Controllers
             }
         }
 
-
-
-        public async Task<IActionResult> CreateNewUser(UserModel model) 
+        public async Task<IActionResult> CreateNewUser(UserCreateModel model) 
         {
             if (ModelState.IsValid)
             {

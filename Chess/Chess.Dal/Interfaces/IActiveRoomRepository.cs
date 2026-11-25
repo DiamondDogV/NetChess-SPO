@@ -1,17 +1,13 @@
 ﻿using Chess.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Chess.Dal.Interfaces
 {
     public interface IActiveRoomRepository : IBaseRepository<ActiveRoom>
     {
-        Task<ActiveRoom> GetByToken(string token);
+        Task<ActiveRoom?> GetByToken(string token);
         Task<bool> TouchHeartbeat(string token);
         Task<int> RemoveStale(DateTime olderThan);
         Task<bool> DeleteByToken(string token);
+        Task<List<ActiveRoom>> GetOpenRooms();
     }
 }

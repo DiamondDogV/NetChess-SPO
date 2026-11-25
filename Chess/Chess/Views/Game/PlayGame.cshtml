@@ -7,153 +7,266 @@
     ViewData["Title"] = "Игра: " + Model.RoomName;
 }
 
+<style>
+    .game-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 20px 0;
+    }
+
+    .chess-board {
+        display: grid !important;
+        grid-template-columns: repeat(8, 60px) !important;
+        grid-template-rows: repeat(8, 60px) !important;
+
+        width: 480px !important;
+        height: 480px !important;
+
+        box-sizing: content-box !important;
+        border: 4px solid #222 !important;
+        margin: 20px auto !important;
+        background-color: #000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .cell {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        font-size: 44px !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        width: 60px !important;
+        height: 60px !important;
+        box-sizing: border-box !important;
+    }
+
+    .cell-light {
+        background-color: #f0d9b5 !important;
+    }
+
+    .cell-dark {
+        background-color: #b58863 !important;
+    }
+
+    .piece-white {
+        color: #ffffff !important;
+        text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000 !important;
+    }
+
+    .piece-black {
+        color: #000000 !important;
+        text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff !important;
+    }
+
+    .info-panel {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .chess-room-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: #fff;
+    }
+
+    .turn-indicator {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+</style>
+
 <div class="game-page">
+    <div id="game-over-banner" style="display:none; background-color:#e74c3c; color:white; text-align:center; font-size:36px; font-weight:bold; padding:20px; margin:10px auto; max-width:600px; border-radius:10px;">
+        МАТ! ИГРА ОКОНЧЕНА
+    </div>
 
-    @{
-        bool isGameOver = ChessHelper.isMat(Model.Board, new System.Drawing.Point(-1, -1));
-    }
-
-    @if (isGameOver)
-    {
-        <div style="background-color: #e74c3c; color: white; text-align: center; font-size: 36px; font-weight: bold; padding: 20px; margin: 10px auto; max-width: 600px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); letter-spacing: 2px;">
-            МАТ! ИГРА ОКОНЧЕНА
-        </div>
-    }
     <div class="info-panel">
-        <a href="/" class="btn-back">Назад</a>
+        <a href="/" class="btn-back">Назад на главную</a>
         <div class="chess-room-title">
             <span>Название комнаты:</span> @Model.RoomName
         </div>
+        <div id="turn-indicator" class="turn-indicator">Ожидание подключения...</div>
     </div>
 
-    <div class="chess-board">
-        @{
-            int startRow = Model.IsWhite ? 0 : 7;
-            int endRow = Model.IsWhite ? 8 : -1;
-            int rowStep = Model.IsWhite ? 1 : -1;
-
-            int startCol = Model.IsWhite ? 0 : 7;
-            int endCol = Model.IsWhite ? 8 : -1;
-            int colStep = Model.IsWhite ? 1 : -1;
-        }
-
-        @for (int row = startRow; row != endRow; row += rowStep)
-        {
-            for (int col = startCol; col != endCol; col += colStep)
-            {
-                string cellColorClass = (row + col) % 2 == 0 ? "cell-light" : "cell-dark";
-                var piece = Model.Board[row, col];
-                string pieceSymbol = "";
-                string pieceColorClass = "";
-
-                if (piece != null && piece.ChessType != CMT.None)
-                {
-                    pieceColorClass = piece.IsBlack ? "piece-black" : "piece-white";
-                    switch (piece.ChessType)
-                    {
-                        case CMT.King: pieceSymbol = "♚"; break;
-                        case CMT.Ferz: pieceSymbol = "♛"; break;
-                        case CMT.Roock: pieceSymbol = "♜"; break;
-                        case CMT.Slon: pieceSymbol = "♝"; break;
-                        case CMT.Knight: pieceSymbol = "♞"; break;
-                        case CMT.Pawn: pieceSymbol = "♟"; break;
-                    }
-                }
-
-                <div class="cell @cellColorClass" id="cell-@row-@col" onclick="onCellClick(@row, @col)">
-                    @if (!string.IsNullOrEmpty(pieceSymbol))
-                    {
-                        <span class="piece @pieceColorClass">@pieceSymbol</span>
-                    }
-                </div>
-            }
-        }
-    </div>
+    <!-- Сюда рендерится доска -->
+    <div class="chess-board" id="chess-board"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 <script>
     const ROOM_TOKEN = '@Model.Token';
-    const HEARTBEAT_MS = 5000;
-    let selectedPiece = null;
-    let currentBoardState = '@ChessHelper.Serialize(Model.Board)';
+    const MY_INITIAL_WHITE = @(Model.IsWhite ? "true" : "false");
 
-    async function heartbeat() {
-        try {
-            await fetch('/Game/Heartbeat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: ROOM_TOKEN })
-            });
-        } catch (e) { }
+    let connection = null;
+    let myColor = MY_INITIAL_WHITE ? 'w' : 'b';
+    let selectedPiece = null;
+    let boardState = null;
+    let isMyTurn = false;
+    let isFlipped = !MY_INITIAL_WHITE;
+
+    // === Рендер доски ===
+    function renderBoard(state) {
+        if (!state || state.length < 256) {
+            console.error("Некорректное состояние доски:", state);
+            return;
+        }
+
+        boardState = state;
+        const boardEl = document.getElementById('chess-board');
+        boardEl.innerHTML = '';
+
+        const rows = isFlipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+        const cols = isFlipped ? [7,6,5,4,3,2,1,0] : [0,1,2,3,4,5,6,7];
+
+        for (const row of rows) {
+            for (const col of cols) {
+                const idx = (row * 8 + col) * 4;
+                const chunk = state.substring(idx, idx + 4);
+
+                const cell = document.createElement('div');
+                cell.className = 'cell ' + ((row + col) % 2 === 0 ? 'cell-light' : 'cell-dark');
+                cell.id = `cell-${row}-${col}`;
+                cell.onclick = () => onCellClick(row, col);
+
+                if (chunk !== '____') {
+                    const isBlack = chunk[0] === 'b';
+                    const type = chunk[1];
+
+                    // Используем символы шахмат
+                    let symbol = '';
+                    if (type === 'P') symbol = '♟';
+                    else if (type === 'N') symbol = '♞';
+                    else if (type === 'B') symbol = '♝';
+                    else if (type === 'R') symbol = '♜';
+                    else if (type === 'Q') symbol = '♛';
+                    else if (type === 'K') symbol = '♚';
+
+                    const span = document.createElement('span');
+                    span.className = 'piece ' + (isBlack ? 'piece-black' : 'piece-white');
+                    // Белые фигуры обычно контурные, но для простоты используем заливку
+                    if (!isBlack) span.style.color = '#fff';
+                    span.textContent = symbol;
+                    cell.appendChild(span);
+                }
+                boardEl.appendChild(cell);
+            }
+        }
+        updateTurnIndicator();
     }
-    heartbeat();
-    setInterval(heartbeat, HEARTBEAT_MS);
+
+    function updateTurnIndicator() {
+        const el = document.getElementById('turn-indicator');
+        if (!el) return;
+
+        if (isMyTurn) {
+            el.textContent = 'Ваш ход';
+            el.style.color = '#2ecc71';
+        } else {
+            el.textContent = 'Ход соперника';
+            el.style.color = '#e67e22';
+        }
+    }
 
     function highlightMoves(moves) {
         document.querySelectorAll('.cell').forEach(c => c.style.boxShadow = 'none');
         moves.forEach(m => {
             const cell = document.getElementById(`cell-${m[1]}-${m[0]}`);
-            if (cell) cell.style.boxShadow = 'inset 0 0 0 3px rgba(0, 255, 0, 0.7)';
+            if (cell) cell.style.boxShadow = 'inset 0 0 0 4px rgba(0,255,0,0.7)';
         });
     }
 
+    // === Клики ===
     async function onCellClick(row, col) {
+        if (!isMyTurn) { alert('Сейчас не ваш ход'); return; }
+
         if (selectedPiece) {
             if (selectedPiece.row === row && selectedPiece.col === col) {
                 selectedPiece = null;
                 highlightMoves([]);
                 return;
             }
-            await makeMove(selectedPiece.row, selectedPiece.col, row, col);
+            try {
+                await connection.invoke('MakeMove', {
+                    token: ROOM_TOKEN,
+                    fromX: selectedPiece.col, fromY: selectedPiece.row,
+                    toX: col, toY: row
+                });
+                selectedPiece = null;
+                highlightMoves([]);
+            } catch (err) {
+                alert('Ошибка хода: ' + err.message);
+                selectedPiece = null;
+                highlightMoves([]);
+            }
         } else {
-            const res = await fetch('/Game/SelectPiece', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ Token: ROOM_TOKEN, FromX: col, FromY: row })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                selectedPiece = { row: row, col: col };
-                highlightMoves(data.moves);
-            } else {
-                const errorText = await res.text();
-                alert('Ошибка выбора: ' + errorText);
+            try {
+                const res = await connection.invoke('SelectPiece', {
+                    token: ROOM_TOKEN,
+                    fromX: col, fromY: row
+                });
+                selectedPiece = { row, col };
+                highlightMoves(res.moves || []);
+            } catch (err) {
+                alert('Ошибка выбора: ' + err.message);
             }
         }
     }
 
-        async function makeMove(fromY, fromX, toY, toX) {
-        const res = await fetch('/Game/MakeMove', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ Token: ROOM_TOKEN, FromX: fromX, FromY: fromY, ToX: toX, ToY: toY })
+    // === SignalR ===
+    async function connect() {
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl('/hubs/game')
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('MoveMade', m => {
+            renderBoard(m.boardState);
+            isMyTurn = (m.isWhiteTurn && myColor === 'w') || (!m.isWhiteTurn && myColor === 'b');
+            updateTurnIndicator();
+            if (m.isMate) {
+                document.getElementById('game-over-banner').style.display = 'block';
+            }
         });
 
-        if (res.ok) {
-            const data = await res.json();
-            if (data.isMate) {
-                alert(data.message);
+        connection.on('GameOver', g => {
+            document.getElementById('game-over-banner').style.display = 'block';
+            const winner = g.winner === 'white' ? 'Белые' : 'Чёрные';
+            setTimeout(() => alert(`Мат! Победили ${winner}`), 100);
+        });
+
+        connection.on('OpponentJoined', name => {
+            console.log('Подключился:', name);
+        });
+
+        connection.on('OpponentDisconnected', color => {
+            alert('Соперник отключился');
+        });
+
+        await connection.start();
+        await joinOrCreate();
+    }
+
+    async function joinOrCreate() {
+        try {
+            const res = await connection.invoke('JoinRoom', ROOM_TOKEN);
+            myColor = res.isWhite ? 'w' : 'b';
+            isFlipped = myColor === 'b';
+            isMyTurn = (res.isWhiteTurn && myColor === 'w') || (!res.isWhiteTurn && myColor === 'b');
+            renderBoard(res.boardState);
+
+            if (res.isMate) {
+                document.getElementById('game-over-banner').style.display = 'block';
             }
-            window.location.href = window.location.href;
-        } else {
-            const errorText = await res.text();
-            alert('Ошибка хода: ' + errorText);
-            selectedPiece = null;
-            highlightMoves([]);
+        } catch (err) {
+            console.error('JoinRoom failed:', err);
+            alert('Не удалось подключиться к комнате: ' + err.message);
         }
     }
 
-    async function syncBoard() {
-        try {
-            const res = await fetch(`/Game/GetBoardState?token=${ROOM_TOKEN}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.state !== currentBoardState) {
-                    window.location.href = window.location.href;
-                }
-            }
-        } catch (e) { }
-    }
-    //setInterval(syncBoard, 2000);
+    // Запуск
+    connect();
 </script>

@@ -22,11 +22,9 @@ namespace Chess.Service.Implementations
                 {
                     using var scope = _scopeFactory.CreateScope();
                     var svc = scope.ServiceProvider.GetRequiredService<IActiveRoomService>();
-
                     await svc.CleanupStaleAsync(TimeSpan.FromSeconds(30));
                 }
                 catch { }
-
                 await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
             }
         }

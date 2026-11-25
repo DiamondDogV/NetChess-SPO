@@ -2,7 +2,7 @@
 
 namespace Chess.Models
 {
-    public class UserModel
+    public class UserCreateModel
     {
         [Display(Name = "Логин")]
         [Required(ErrorMessage = "Неверный формат логина")]

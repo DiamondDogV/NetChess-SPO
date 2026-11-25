@@ -10,3 +10,4 @@ D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Domain\obj\Debug\net8.0\Chess.Domai
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Domain\obj\Debug\net8.0\refint\Chess.Domain.dll
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Domain\obj\Debug\net8.0\Chess.Domain.pdb
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Domain\obj\Debug\net8.0\ref\Chess.Domain.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess.Domain\obj\Debug\net8.0\Chess.Domain.csproj.AssemblyReference.cache

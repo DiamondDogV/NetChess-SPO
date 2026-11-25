@@ -1,71 +1,93 @@
 ﻿using Chess.Dal.Interfaces;
 using Chess.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Chess.Dal.Repositories
 {
     public class ActiveRoomRepository : IActiveRoomRepository
     {
-        ApplicationDBContext dBContext;
-        public ActiveRoomRepository(ApplicationDBContext dBContext) { this.dBContext = dBContext; }
+        private readonly IDbContextFactory<ApplicationDBContext> _factory;
+        public ActiveRoomRepository(IDbContextFactory<ApplicationDBContext> factory)
+            => _factory = factory;
+
+        private ApplicationDBContext Ctx() => _factory.CreateDbContext();
 
         public async Task<bool> Create(ActiveRoom entity)
         {
-            await dBContext.ActiveRooms.AddAsync(entity);
-            await dBContext.SaveChangesAsync();
-            return true;
+            await using var db = Ctx();
+            await db.ActiveRooms.AddAsync(entity);
+            return await db.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(ActiveRoom entity)
         {
-            dBContext.ActiveRooms.Remove(entity);
-            await dBContext.SaveChangesAsync();
-            return true;
+            await using var db = Ctx();
+            db.ActiveRooms.Remove(entity);
+            return await db.SaveChangesAsync() > 0;
         }
-        public async Task<IEnumerable<ActiveRoom>> SelectAll() => dBContext.ActiveRooms;
 
-        public async Task<ActiveRoom> SelectById(long id) => await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Id == id);
+        public async Task<IEnumerable<ActiveRoom>> SelectAll()
+        {
+            await using var db = Ctx();
+            return await db.ActiveRooms.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<ActiveRoom?> SelectById(long id)
+        {
+            await using var db = Ctx();
+            return await db.ActiveRooms.FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<bool> Update(ActiveRoom entity)
         {
-            dBContext.ActiveRooms.Update(entity);
-            await dBContext.SaveChangesAsync();
-            return true;
+            await using var db = Ctx();
+            db.ActiveRooms.Update(entity);
+            return await db.SaveChangesAsync() > 0;
         }
 
-
-        public async Task<ActiveRoom> GetByToken(string token) => await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+        public async Task<ActiveRoom?> GetByToken(string token)
+        {
+            await using var db = Ctx();
+            return await db.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+        }
 
         public async Task<bool> TouchHeartbeat(string token)
         {
-            var room = await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+            await using var db = Ctx();
+            var room = await db.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
             if (room == null) return false;
             room.LastHeartbeat = DateTime.UtcNow;
-            await dBContext.SaveChangesAsync();
-            return true;
+            return await db.SaveChangesAsync() > 0;
         }
 
         public async Task<int> RemoveStale(DateTime olderThan)
         {
-            var stale = await dBContext.ActiveRooms.Where(x => x.LastHeartbeat < olderThan).ToListAsync();
-            if (!stale.Any()) return 0;
-            dBContext.ActiveRooms.RemoveRange(stale);
-            await dBContext.SaveChangesAsync();
+            await using var db = Ctx();
+            var stale = await db.ActiveRooms
+                .Where(x => x.LastHeartbeat < olderThan)
+                .ToListAsync();
+            if (stale.Count == 0) return 0;
+            db.ActiveRooms.RemoveRange(stale);
+            await db.SaveChangesAsync();
             return stale.Count;
         }
 
         public async Task<bool> DeleteByToken(string token)
         {
-            var room = await dBContext.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
+            await using var db = Ctx();
+            var room = await db.ActiveRooms.FirstOrDefaultAsync(x => x.Token == token);
             if (room == null) return false;
-            dBContext.ActiveRooms.Remove(room);
-            await dBContext.SaveChangesAsync();
-            return true;
+            db.ActiveRooms.Remove(room);
+            return await db.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<ActiveRoom>> GetOpenRooms()
+        {
+            await using var db = Ctx();
+            return await db.ActiveRooms
+                .Where(r => r.BlackConnectionId == null && !r.IsMate)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

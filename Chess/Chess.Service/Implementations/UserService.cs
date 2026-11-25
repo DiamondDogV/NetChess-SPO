@@ -19,11 +19,12 @@ namespace Chess.Service.Implementations
 
         public ClaimsIdentity Authentication(User user)
         {
-            var claim = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType,user.Email)
-            };
-            return new ClaimsIdentity(claim, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+    };
+            return new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
         }
 
         public async Task<IBaseResponce<bool>> CreateAsync(User entity)

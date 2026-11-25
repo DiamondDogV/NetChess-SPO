@@ -1,23 +1,24 @@
+using Chess.Dal;
+using Chess.Dal.Interfaces;
+using Chess.Dal.Repositories;
+using Chess.Models;
+using Chess.Service.Implementations;
+using Chess.Service.Interfaces;
 using global::Microsoft.AspNetCore.Builder;
 using global::Microsoft.AspNetCore.Hosting;
 using global::Microsoft.AspNetCore.HttpsPolicy;
+using global::Microsoft.EntityFrameworkCore;
 using global::Microsoft.Extensions.Configuration;
 using global::Microsoft.Extensions.DependencyInjection;
 using global::Microsoft.Extensions.Hosting;
 using global::System;
 using global::System.Collections.Generic;
 using global::System.Linq;
-using global::System.Threading.Tasks;
-using global::Microsoft.EntityFrameworkCore;
 using global::System.Security.Claims;
+using global::System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Net.Http;
 using Microsoft.AspNetCore.Http;
-using Chess.Dal;
-using Chess.Dal.Repositories;
-using Chess.Dal.Interfaces;
-using Chess.Service.Implementations;
-using Chess.Service.Interfaces;
+using System.Net.Http;
 
 namespace Chess
 {
@@ -30,18 +31,26 @@ namespace Chess
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddScoped<IGameService, GameService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IActiveRoomRepository, ActiveRoomRepository>();
             builder.Services.AddScoped<IActiveRoomService, ActiveRoomService>();
 
+            builder.Services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true; 
+                o.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                o.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+                o.MaximumReceiveMessageSize = 64 * 1024;
+            });
 
-
-            builder.Services.AddDbContextPool<ApplicationDBContext>(options =>
-         options.UseMySql(builder.Configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))));
-
+            builder.Services.AddDbContextFactory<ApplicationDBContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("Default"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default"))
+    ));
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(option =>
             {
@@ -82,6 +91,7 @@ namespace Chess
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapHub<GameHub>("/hubs/game");
 
             app.Run();
         }

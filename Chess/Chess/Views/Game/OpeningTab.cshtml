@@ -6,7 +6,8 @@
 </div>
 <script>
     (function () {
-        const url = '/Game/Board?token=@ViewBag.Token&creatorToken=@ViewBag.CreatorToken';
+        const url = '/Game/Board?token=@ViewBag.Token';
         window.open(url, '_blank');
+        window.location.href = '/Game/FindRoom';
     })();
 </script>

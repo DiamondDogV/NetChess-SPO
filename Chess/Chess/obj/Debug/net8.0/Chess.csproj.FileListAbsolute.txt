@@ -55,3 +55,8 @@ D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\obj\Debug\net8.0\refint\Chess.dll
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\obj\Debug\net8.0\Chess.pdb
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\obj\Debug\net8.0\Chess.genruntimeconfig.cache
 D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\obj\Debug\net8.0\ref\Chess.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\bin\Debug\net8.0\Newtonsoft.Json.dll
+D:\C#\ASP.Net\Chess\NetChess-SPO\Chess\Chess\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll

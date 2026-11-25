@@ -116,8 +116,9 @@ namespace Chess.Domain.Helpers
 
             for (int y = 0; y < 8; y++)
                 for (int x = 0; x < 8; x++)
-                    board[y, x] = new Cell();
-
+                {
+                    board[y, x] = new Cell { Position = new Point(x, y) };
+                }
             CMT[] backRow = { CMT.Roock, CMT.Knight, CMT.Slon, CMT.Ferz, CMT.King, CMT.Slon, CMT.Knight, CMT.Roock };
 
             for (int x = 0; x < 8; x++)
@@ -148,22 +149,18 @@ namespace Chess.Domain.Helpers
 
         public static bool EmulateMoves(in IChess[,] matrix, IChess this_, Point Position, Point to, King king)
         {
-            if (king == null)
-            {
-                king = FindMyKing(in matrix);
-            }
+            if (king == null) king = FindMyKing(in matrix);
             IChess[,] matrix2 = new IChess[8, 8];
             CopyMatrix(matrix, ref matrix2);
-            matrix2[to.Y, to.X] = this_;
+
+            var kingCopy = FindMyKing(matrix2);
+            var movedCopy = matrix2[Position.Y, Position.X];
+
+            matrix2[to.Y, to.X] = movedCopy;
+            movedCopy.Position = to;
             matrix2[Position.Y, Position.X] = new Cell();
-            if (this_ == king)
-            {
-                return king.CheckStillExist(matrix2, to);
-            }
-            else
-            {
-                return king.CheckStillExist(matrix2, new Point(-1, -1));
-            }
+
+            return kingCopy == null || kingCopy.CheckStillExist(matrix2, new Point(-1, -1));
         }
 
         public static IChess CreatePiece(CMT type, bool isBlack, Point position, bool isMy, bool isFirstMove)
@@ -236,7 +233,9 @@ namespace Chess.Domain.Helpers
 
                     if (chunk == "____")
                     {
-                        board[y, x] = new Cell();
+                        var cell = new Cell();
+                        cell.Position = new System.Drawing.Point(x, y);
+                        board[y, x] = cell;
                     }
                     else
                     {
