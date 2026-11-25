@@ -50,13 +50,10 @@ namespace Chess.Models
                     if (isWhite) room.WhiteConnectionId = null;
                     if (isBlack) room.BlackConnectionId = null;
 
-                    if (room.WhiteConnectionId == null && room.BlackConnectionId == null)
-                        room.LastHeartbeat = DateTime.UtcNow.AddMinutes(-5);
+                    // if (room.WhiteConnectionId == null && room.BlackConnectionId == null)
+                    //     room.LastHeartbeat = DateTime.UtcNow.AddMinutes(-5);
 
                     await rooms.Update(room);
-
-                    await _hub.Clients.Group(token).SendAsync("OpponentDisconnected",
-                        isWhite ? "white" : "black");
                 }
             }
             await base.OnDisconnectedAsync(ex);
@@ -183,36 +180,49 @@ namespace Chess.Models
 
         public async Task MakeMove(MoveRequest req)
         {
-            var (room, playerIsWhite, _) = await LoadRoomForPlayer(req.Token);
-            if (room == null) throw new HubException("Комната не найдена");
-            if (room.IsMate) throw new HubException("Игра окончена");
-            if (room.IsWhiteTurn != playerIsWhite) throw new HubException("Сейчас не ваш ход!");
-
-            await using var scope = _scopeFactory.CreateAsyncScope();
-            var games = scope.ServiceProvider.GetRequiredService<IGameService>();
-            var rooms = scope.ServiceProvider.GetRequiredService<IActiveRoomRepository>();
-
-            var outcome = await games.MakeMoveAsync(room, playerIsWhite, req);
-            if (!outcome.Success) throw new HubException(outcome.Error ?? "Ошибка хода");
-
-            await rooms.Update(room);
-
-            await _hub.Clients.Group(req.Token).SendAsync("MoveMade", new
+            try
             {
-                fromX = req.FromX,
-                fromY = req.FromY,
-                toX = req.ToX,
-                toY = req.ToY,
-                boardState = room.BoardState,
-                isWhiteTurn = room.IsWhiteTurn,
-                isMate = room.IsMate
-            });
+                var (room, playerIsWhite, _) = await LoadRoomForPlayer(req.Token);
+                if (room == null) throw new HubException("Комната не найдена");
+                if (room.IsMate) throw new HubException("Игра окончена");
+                if (room.IsWhiteTurn != playerIsWhite) throw new HubException("Сейчас не ваш ход!");
 
-            if (room.IsMate)
-                await _hub.Clients.Group(req.Token).SendAsync("GameOver",
-                    new { winner = playerIsWhite ? "white" : "black" });
+                await using var scope = _scopeFactory.CreateAsyncScope();
+                var games = scope.ServiceProvider.GetRequiredService<IGameService>();
+                var rooms = scope.ServiceProvider.GetRequiredService<IActiveRoomRepository>();
+
+                var outcome = await games.MakeMoveAsync(room, playerIsWhite, req);
+
+                if (!outcome.Success)
+                {
+                    await Clients.Caller.SendAsync("MoveError", outcome.Error);
+                    return;
+                }
+
+                await rooms.Update(room);
+
+                await _hub.Clients.Group(req.Token).SendAsync("MoveMade", new
+                {
+                    fromX = req.FromX,
+                    fromY = req.FromY,
+                    toX = req.ToX,
+                    toY = req.ToY,
+                    boardState = room.BoardState,
+                    isWhiteTurn = room.IsWhiteTurn,
+                    isMate = room.IsMate
+                });
+
+                if (room.IsMate)
+                    await _hub.Clients.Group(req.Token).SendAsync("GameOver",
+                        new { winner = playerIsWhite ? "white" : "black" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при ходе");
+
+                await Clients.Caller.SendAsync("MoveError", "Внутренняя ошибка сервера");
+            }
         }
-
 
         public async Task Heartbeat(string token)
         {
@@ -245,12 +255,17 @@ namespace Chess.Models
             await using var scope = _scopeFactory.CreateAsyncScope();
             var rooms = scope.ServiceProvider.GetRequiredService<IActiveRoomRepository>();
             var room = await rooms.GetByToken(token);
-            if (room == null) return (null, false, userId);
+
+            if (room == null)
+            {
+                _logger.LogWarning($"Комната с токеном {token} не найдена в БД.");
+                return (null, false, userId);
+            }
 
             bool isWhite;
             if (room.OwnerUserId == userId) isWhite = room.IsWhite;
             else if (room.GuestUserId == userId) isWhite = !room.IsWhite;
-            else return (null, false, userId);
+            else return (null, false, userId); 
 
             return (room, isWhite, userId);
         }

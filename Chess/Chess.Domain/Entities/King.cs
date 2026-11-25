@@ -105,7 +105,6 @@ namespace Chess.Domain.Entities
                      MovesType.Beat : MovesType.None;
             }
         }
-
         public void ShowMoves(in IChess[,] matrix, out MovesType[,] movesMatrix)
         {
             movesMatrix = new MovesType[8, 8];
@@ -118,13 +117,16 @@ namespace Chess.Domain.Entities
             CheckMove(Position.Y, Position.X - 1, ref movesMatrix, matrix, this);
             CheckMove(Position.Y, Position.X + 1, ref movesMatrix, matrix, this);
 
-            if (CanMakeRokir(matrix, new Point(7, 7)))
+            if (CanMakeRokir(matrix, new Point(7, Position.Y)))
             {
-                movesMatrix[7, 7] = MovesType.Move;
+                movesMatrix[Position.Y, 6] = MovesType.Move; 
+                movesMatrix[Position.Y, 7] = MovesType.Move; 
             }
-            if (CanMakeRokir(matrix, new Point(0, 7)))
+
+            if (CanMakeRokir(matrix, new Point(0, Position.Y)))
             {
-                movesMatrix[7, 0] = MovesType.Move;
+                movesMatrix[Position.Y, 2] = MovesType.Move; 
+                movesMatrix[Position.Y, 0] = MovesType.Move;
             }
         }
 

@@ -32,7 +32,6 @@ namespace Chess.Service.Implementations
         public Task<MoveOutcome> MakeMoveAsync(ActiveRoom room, bool playerIsWhite, MoveRequest req)
         {
             var board = ChessHelper.Deserialize(room.BoardState);
-
             ApplyIsMy(board, playerIsWhite);
 
             var selected = board[req.FromY, req.FromX];
@@ -40,53 +39,114 @@ namespace Chess.Service.Implementations
                 return Task.FromResult(new MoveOutcome { Success = false, Error = "Неверная фигура" });
 
             var target = new Point(req.ToX, req.ToY);
-            bool isMove, isBeat;
+            bool isMove = false;
+            bool isBeat = false;
+            bool isCastling = false;
 
-            if (board[req.ToY, req.ToX].ChessType == CMT.None)
-                isMove = selected.CanMove(board, target);
-            else
-                isMove = false;
+            // === ПРОВЕРКА РОКИРОВКИ ===
+            if (selected is King king)
+            {
+                // Если король пытается пойти на 2 клетки в сторону
+                if (Math.Abs(req.ToX - req.FromX) == 2 && req.ToY == req.FromY)
+                {
+                    if (king.CanMakeRokir(board, target))
+                    {
+                        isMove = true;
+                        isCastling = true;
+                    }
+                }
+                // Если игрок кликнул на ладью (h1/a1), а не на пустую клетку
+                else if (Math.Abs(req.ToX - req.FromX) > 2) // Клик на ладью
+                {
+                    Point rookPoint = new Point(req.ToX, req.ToY);
+                    // Проверяем, что там стоит ладья
+                    if (board[req.ToY, req.ToX] is Roock)
+                    {
+                        if (king.CanMakeRokir(board, rookPoint))
+                        {
+                            isMove = true;
+                            isCastling = true;
+                            // Меняем target, чтобы он указывал на конечную позицию короля
+                            target = new Point(req.ToX > req.FromX ? 6 : 2, req.FromY);
+                        }
+                    }
+                }
+            }
 
-            if (!isMove)
-                isBeat = selected.CanBeat(in board, target);
-            else
-                isBeat = false;
+            // Если это не рокировка, проверяем обычный ход
+            if (!isCastling)
+            {
+                if (board[req.ToY, req.ToX].ChessType == CMT.None)
+                    isMove = selected.CanMove(board, target);
+                else
+                    isBeat = selected.CanBeat(in board, target);
+            }
 
             if (!isMove && !isBeat)
                 return Task.FromResult(new MoveOutcome { Success = false, Error = "Недопустимый ход" });
 
-            var king = ChessHelper.FindMyKing(board);
-            if (!ChessHelper.EmulateMoves(board, selected, new Point(req.FromX, req.FromY), target, king))
+            // Проверка на шах
+            var myKing = ChessHelper.FindMyKing(board);
+            if (!ChessHelper.EmulateMoves(board, selected, new Point(req.FromX, req.FromY), target, myKing))
                 return Task.FromResult(new MoveOutcome { Success = false, Error = "Король под шахом" });
 
-            if (selected.ChessType == CMT.King && Math.Abs(req.ToX - req.FromX) == 2)
+            // === ПРИМЕНЕНИЕ РОКИРОВКИ ===
+            if (isCastling)
             {
-                int rookFromX = req.ToX > req.FromX ? 7 : 0;
-                int rookToX = req.ToX > req.FromX ? req.ToX - 1 : req.ToX + 1;
-                var rook = board[req.FromY, rookFromX];
-                board[req.FromY, rookToX] = rook;
-                board[req.FromY, rookFromX] = new Cell();
-                rook.Position = new Point(rookToX, req.FromY);
+                int row = req.FromY;
+                int kingToX, rookFromX, rookToX;
+
+                if (req.ToX > req.FromX)
+                {
+                    kingToX = 6;      // g1 / g8
+                    rookFromX = 7;    // h1 / h8
+                    rookToX = 5;      // f1 / f8
+                }
+                else
+                {
+                    kingToX = 2;      // c1 / c8
+                    rookFromX = 0;    // a1 / a8
+                    rookToX = 3;      // d1 / d8
+                }
+
+                var rook = board[row, rookFromX];
+                var kingPiece = board[row, req.FromX];
+
+                // 1. Очищаем старые клетки
+                board[row, req.FromX] = new Cell();  // e1
+                board[row, rookFromX] = new Cell();  // h1 или a1
+
+                // 2. Ставим короля
+                kingPiece.Position = new Point(kingToX, row);
+                board[row, kingToX] = kingPiece;
+                kingPiece.IsFirstMove = false;
+
+                // 3. Ставим ладью
+                rook.Position = new Point(rookToX, row);
+                board[row, rookToX] = rook;
                 rook.IsFirstMove = false;
             }
-
-            selected.Position = target;
-            board[req.ToY, req.ToX] = selected;
-            board[req.FromY, req.FromX] = new Cell();
-            selected.IsFirstMove = false;
-
-            if (selected.ChessType == CMT.Pawn && (req.ToY == 0 || req.ToY == 7))
+            else
             {
-                var promoted = new Ferz(selected.IsBlack, target, selected.IsMy, false);
-                board[req.ToY, req.ToX] = promoted;
+                // Обычный ход
+                selected.Position = target;
+                board[req.ToY, req.ToX] = selected;
+                board[req.FromY, req.FromX] = new Cell();
+                selected.IsFirstMove = false;
+
+                // Превращение пешки
+                if (selected.ChessType == CMT.Pawn && (req.ToY == 0 || req.ToY == 7))
+                {
+                    board[req.ToY, req.ToX] = new Ferz(selected.IsBlack, target, selected.IsMy, false);
+                }
             }
 
             room.BoardState = ChessHelper.Serialize(board);
             room.IsWhiteTurn = !room.IsWhiteTurn;
 
+            // Мат
             ApplyIsMy(board, !playerIsWhite);
             bool isMate = ChessHelper.isMat(board, target);
-
             room.IsMate = isMate;
 
             return Task.FromResult(new MoveOutcome

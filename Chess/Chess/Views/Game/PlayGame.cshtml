@@ -92,7 +92,6 @@
         <div id="turn-indicator" class="turn-indicator">Ожидание подключения...</div>
     </div>
 
-    <!-- Сюда рендерится доска -->
     <div class="chess-board" id="chess-board"></div>
 </div>
 
@@ -108,7 +107,6 @@
     let isMyTurn = false;
     let isFlipped = !MY_INITIAL_WHITE;
 
-    // === Рендер доски ===
     function renderBoard(state) {
         if (!state || state.length < 256) {
             console.error("Некорректное состояние доски:", state);
@@ -136,7 +134,6 @@
                     const isBlack = chunk[0] === 'b';
                     const type = chunk[1];
 
-                    // Используем символы шахмат
                     let symbol = '';
                     if (type === 'P') symbol = '♟';
                     else if (type === 'N') symbol = '♞';
@@ -147,8 +144,6 @@
 
                     const span = document.createElement('span');
                     span.className = 'piece ' + (isBlack ? 'piece-black' : 'piece-white');
-                    // Белые фигуры обычно контурные, но для простоты используем заливку
-                    if (!isBlack) span.style.color = '#fff';
                     span.textContent = symbol;
                     cell.appendChild(span);
                 }
@@ -179,7 +174,6 @@
         });
     }
 
-    // === Клики ===
     async function onCellClick(row, col) {
         if (!isMyTurn) { alert('Сейчас не ваш ход'); return; }
 
@@ -216,12 +210,15 @@
         }
     }
 
-    // === SignalR ===
     async function connect() {
         connection = new signalR.HubConnectionBuilder()
             .withUrl('/hubs/game')
             .withAutomaticReconnect()
             .build();
+
+        connection.on('MoveError', (msg) => {
+            alert('Ошибка: ' + msg);
+        });
 
         connection.on('MoveMade', m => {
             renderBoard(m.boardState);
@@ -267,6 +264,15 @@
         }
     }
 
-    // Запуск
+    setInterval(async () => {
+        try {
+            if (connection && connection.state === signalR.HubConnectionState.Connected) {
+                await connection.invoke('Heartbeat', ROOM_TOKEN);
+            }
+        } catch (e) {
+            console.warn("Heartbeat failed", e);
+        }
+    }, 15000);
+
     connect();
 </script>
